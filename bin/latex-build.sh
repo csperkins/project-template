@@ -23,18 +23,18 @@ do
 done
 
 blank_line () {
-  tput setaf 2
+  tput setaf 2 || false
   echo $BLANK_LINE
-  tput sgr0
+  tput sgr0 || false
 }
 
 blank_line
 
-tput setaf 2
+tput setaf 2 || false
 echo "== "
 echo "== Building LaTeX document: $TEX_BASE.tex"
 echo "== "
-tput sgr0
+tput sgr0 || false
 
 done_bib=0
 do_bib=0
@@ -126,12 +126,12 @@ cat $TEX_BASE.fonts
 nmf=`cat $TEX_BASE.fonts | tail -n +3 | awk '{if ($(NF-4) != "yes") print $0}' | wc -l`
 
 if [ $nmf -gt 0 ]; then \
-  tput setaf 1 
-  tput bold
+  tput setaf 1  || false
+  tput bold || false
   echo ""
   echo "WARNING: Some fonts are not embedded"
   echo "Try running \"updmap --edit\" and setting \"pdftexDownloadBase14 true\""
-  tput sgr0
+  tput sgr0 || false
 fi
 
 echo ""
