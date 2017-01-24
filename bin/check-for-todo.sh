@@ -5,5 +5,14 @@ if [ $# = 0 ]; then
  exit 1
 fi
  
-egrep -H -i -n --color "\\\\todo\\{" $* | grep -v ".*%.*\\\\todo" || true
- 
+for i in $*
+do
+  echo "**** $i"
+
+  # Find instances of \todo{} that are not commented out:
+  egrep -H -i -n "\\\\todo\\{" $i | egrep -v ".*%.*\\\\todo" | egrep --color "\\\\todo" || true
+
+  # Find instances of FIXME:
+  egrep -H -i -n --color "FIXME" $i || true
+done
+
