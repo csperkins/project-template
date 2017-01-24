@@ -1,11 +1,12 @@
 #!/bin/sh
 
-if [ $# != 1 ]; then
-  echo "Usage: latex-build.sh <basename>"
+if [ $# != 2 ]; then
+  echo "Usage: latex-build.sh <basename> <directory>"
   exit 1
 fi
 
 TEX_BASE=$1
+DIR_NAME=`echo $2 | sed 's/\/$//'`
 
 REGEX_CITE="LaTeX Warning: Citation.*undefined"
 REGEX_LABL="LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right."
@@ -32,7 +33,7 @@ blank_line
 
 tput setaf 2 || false
 echo "== "
-echo "== Building LaTeX document: $TEX_BASE.tex"
+echo "== Building LaTeX document: $DIR_NAME/$TEX_BASE.tex"
 echo "== "
 tput sgr0 || false
 
@@ -43,7 +44,7 @@ do_tex=1
 while [ $do_tex = 1 ]; do
   blank_line
 
-  pdflatex -halt-on-error -file-line-error $TEX_BASE.tex
+  pdflatex -output-directory $DIR_NAME -recorder -halt-on-error -file-line-error $TEX_BASE.tex
   if [ $? = 1 ]; then
     exit 1
   fi
@@ -51,19 +52,19 @@ while [ $do_tex = 1 ]; do
   do_tex=0
 
   # Rerun LaTeX if the labels have changed
-  labl_changed=`grep -c "$REGEX_LABL" $TEX_BASE.log`
+  labl_changed=`grep -c "$REGEX_LABL" $DIR_NAME/$TEX_BASE.log`
   if [ $labl_changed != 0 ]; then
     do_tex=1
   fi
 
   # Rerun LaTeX if PDF bookmarks have changed
-  book_changed=`grep -c "$REGEX_BOOK" $TEX_BASE.log`
+  book_changed=`grep -c "$REGEX_BOOK" $DIR_NAME/$TEX_BASE.log`
   if [ $book_changed != 0 ]; then
     do_tex=1
   fi
 
   # Check if there are undefined citations, request a run of BibTeX if necessary
-  undef_cite=`grep -c "$REGEX_CITE" $TEX_BASE.log`
+  undef_cite=`grep -c "$REGEX_CITE" $DIR_NAME/$TEX_BASE.log`
   if [ $undef_cite != 0 ]; then
     if [ $done_bib = 0 ]; then 
       do_bib=1
@@ -76,7 +77,7 @@ while [ $do_tex = 1 ]; do
 
   # Check if any of the *.bib files includes have been modified since
   # BibTeX was last run; if so, request a new run of BibTeX
-  for f in `grep '\\\\bibdata{' $TEX_BASE.aux | sed 's/\\\bibdata{//' | sed 's/}//'`
+  for f in `grep '\\\\bibdata{' $DIR_NAME/$TEX_BASE.aux | sed 's/\\\bibdata{//' | sed 's/}//'`
   do
     if [ $f.bib -nt $TEX_BASE.bbl ]; then
       do_bib=1
@@ -84,11 +85,11 @@ while [ $do_tex = 1 ]; do
   done
 
   if [ $do_bib = 1 ]; then 
-    num_citations=`grep -c \\\\citation $TEX_BASE.aux`
+    num_citations=`grep -c \\\\citation $DIR_NAME/$TEX_BASE.aux`
     if [ $num_citations -gt 0 -a $done_bib = 0 ]; then
       # BibTeX has been requested and has not run already, and there are citations...
       blank_line
-      bibtex $TEX_BASE
+      BIBINPUTS=$DIR_NAME bibtex $TEX_BASE
       if [ $? = 1 ]; then
         exit 1
       fi
@@ -98,6 +99,16 @@ while [ $do_tex = 1 ]; do
     fi
   fi
 done
+
+# Generate dependencies file for make:
+DEPENDS=""
+for dep in `cat $DIR_NAME/$TEX_BASE.fls | sort | uniq | awk '/^INPUT/ {print $2}'`
+do
+  DEPENDS="$DEPENDS $dep"
+done
+
+echo "$DIR_NAME/$TEX_BASE.pdf: $DEPENDS" > $DIR_NAME/$TEX_BASE.dep
+
 
 # # Call gs to embed all fonts. 
 # blank_line
@@ -116,14 +127,14 @@ done
 blank_line
 
 # The pdfinfo tool is part of Xpdf (http://www.foolabs.com/xpdf/).
-pdfinfo  $TEX_BASE.pdf
+pdfinfo  $DIR_NAME/$TEX_BASE.pdf
 
 echo ""
 echo "PDF Fonts:"
-pdffonts $TEX_BASE.pdf > $TEX_BASE.fonts
-cat $TEX_BASE.fonts
+pdffonts $DIR_NAME/$TEX_BASE.pdf > $DIR_NAME/$TEX_BASE.fonts
+cat $DIR_NAME/$TEX_BASE.fonts
 
-nmf=`cat $TEX_BASE.fonts | tail -n +3 | awk '{if ($(NF-4) != "yes") print $0}' | wc -l`
+nmf=`cat $DIR_NAME/$TEX_BASE.fonts | tail -n +3 | awk '{if ($(NF-4) != "yes") print $0}' | wc -l`
 
 if [ $nmf -gt 0 ]; then \
   tput setaf 1  || false
@@ -136,7 +147,7 @@ fi
 
 echo ""
 echo "PDF SHA256 checksum:"
-shasum -a 256 $TEX_BASE.pdf
+shasum -a 256 $DIR_NAME/$TEX_BASE.pdf
 echo ""
 
 blank_line
