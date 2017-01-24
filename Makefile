@@ -11,7 +11,7 @@ PDF_FILES = papers/example.pdf
 all: $(TOOLS) $(PDF_FILES)
 
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
-# is built from a corresponding .tex file.
+# is built from the corresponding .tex file.
 %.pdf: %.tex %.dep
 	@bin/latex-build.sh $(notdir $(basename $<)) $(dir $<)
 	@bin/check-for-duplicate-words.perl $<
