@@ -7,8 +7,6 @@ fi
  
 for i in $*
 do
-  echo "**** $i"
-
   # Find instances of \todo{} that are not commented out:
   egrep -H -i -n "\\\\todo\\{" $i | egrep -v ".*%.*\\\\todo" | egrep --color "\\\\todo" || true
 
