@@ -39,9 +39,7 @@ build_pdf () {
   blank_line
 
   tput setaf 2 || false
-  echo "== "
   echo "== Building LaTeX document: $DIR_NAME/$TEX_BASE.tex"
-  echo "== "
   tput sgr0 || false
 
   done_bib=0
