@@ -54,7 +54,6 @@ endef
 
 clean:
 	$(call remove,$(TOOLS))
-	$(call remove,$(PDF_FILES))
 	$(foreach pdf,$(PDF_FILES),bin/latex-build.sh clean $(notdir $(basename $(pdf))) $(dir $(pdf)))
 
 # =================================================================================================

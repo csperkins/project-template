@@ -170,7 +170,8 @@ clean_tex() {
            $DIR_NAME/$TEX_BASE.fls \
            $DIR_NAME/$TEX_BASE.fonts \
            $DIR_NAME/$TEX_BASE.log \
-           $DIR_NAME/$TEX_BASE.out
+           $DIR_NAME/$TEX_BASE.out \
+           $DIR_NAME/$TEX_BASE.pdf
   do
     if [ -f $f ]; then
       echo "  remove $f" && rm -f $f
