@@ -55,6 +55,7 @@ endef
 clean:
 	$(call remove,$(TOOLS))
 	$(call remove,$(PDF_FILES))
+	$(foreach pdf,$(PDF_FILES),bin/latex-build.sh clean $(notdir $(basename $(pdf))) $(dir $(pdf)))
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:

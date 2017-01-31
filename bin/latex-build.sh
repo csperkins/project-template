@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # =================================================================================================
 # Script to build a LaTeX document
 # 
@@ -160,6 +160,24 @@ build_pdf () {
   blank_line
 }
 
+# Function to cleanup after a LaTex run:
+clean_tex() {
+  for f in $DIR_NAME/$TEX_BASE.aux \
+           $DIR_NAME/$TEX_BASE.bbl \
+           $DIR_NAME/$TEX_BASE.blg \
+           $DIR_NAME/$TEX_BASE.dep \
+           $DIR_NAME/$TEX_BASE.dvi \
+           $DIR_NAME/$TEX_BASE.fls \
+           $DIR_NAME/$TEX_BASE.fonts \
+           $DIR_NAME/$TEX_BASE.log \
+           $DIR_NAME/$TEX_BASE.out
+  do
+    if [ -f $f ]; then
+      echo "  remove $f" && rm -f $f
+    fi
+  done
+}
+
 # =================================================================================================
 # Check and parse command line arguments:
 
@@ -177,7 +195,12 @@ case $TEX_MODE in
   pdf )
     build_pdf
     ;;
+  dvi )
+    echo "support for building DVI file not yet implemented"
+    exit 1
+    ;;
   clean )
+    clean_tex
     ;;
   * )
     usage
