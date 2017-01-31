@@ -13,7 +13,7 @@ all: $(TOOLS) $(PDF_FILES)
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
 %.pdf: %.tex %.dep
-	@bin/latex-build.sh $(notdir $(basename $<)) $(dir $<)
+	@bin/latex-build.sh pdf $(notdir $(basename $<)) $(dir $<)
 	@bin/check-for-duplicate-words.perl $<
 	@bin/check-for-todo.sh              $<
 
