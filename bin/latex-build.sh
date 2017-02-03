@@ -49,7 +49,7 @@ build_pdf () {
   while [ $do_tex = 1 ]; do
     blank_line
 
-    pdflatex -output-directory $DIR_NAME -recorder -halt-on-error -file-line-error $TEX_BASE.tex
+    pdflatex -interaction=nonstopmode -output-directory $DIR_NAME -recorder -halt-on-error -file-line-error $TEX_BASE.tex
     if [ $? = 1 ]; then
       exit 1
     fi
