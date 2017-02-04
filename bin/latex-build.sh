@@ -49,7 +49,7 @@ build_pdf () {
   while [ $do_tex = 1 ]; do
     blank_line
 
-    pdflatex -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
+    TEXINPUTS=$DIRNAME:lib/tex/inputs: pdflatex -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
     if [ $? = 1 ]; then
       exit 1
     fi
@@ -94,7 +94,7 @@ build_pdf () {
       if [ $num_citations -gt 0 -a $done_bib = 0 ]; then
         # BibTeX has been requested and has not run already, and there are citations...
         blank_line
-        BIBINPUTS=$DIR_NAME bibtex $TEX_BASE
+        BSTINPUTS=$DIRNAME:lib/tex/inputs: BIBINPUTS=$DIR_NAME bibtex $TEX_BASE
         if [ $? = 1 ]; then
           exit 1
         fi
