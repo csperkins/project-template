@@ -49,7 +49,7 @@ build_pdf () {
   while [ $do_tex = 1 ]; do
     blank_line
 
-    pdflatex -interaction=nonstopmode -output-directory $DIR_NAME -recorder -halt-on-error -file-line-error $TEX_BASE.tex
+    pdflatex -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
     if [ $? = 1 ]; then
       exit 1
     fi
@@ -111,9 +111,7 @@ build_pdf () {
   do
     DEPENDS="$DEPENDS $dep"
   done
-
   echo "$DIR_NAME/$TEX_BASE.pdf: $DEPENDS" > $DIR_NAME/$TEX_BASE.dep
-
 
   # # Call gs to embed all fonts. 
   # blank_line
