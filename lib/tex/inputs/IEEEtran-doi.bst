@@ -136,6 +136,10 @@ FUNCTION {default.name.format.string}{ "{f.~}{vv~}{ll}{, jj}" }
 FUNCTION {default.name.latex.cmd}{ "" }
 
 
+% The default DOI prefix.
+FUNCTION {default.name.doi.prefix}{ "" }
+
+
 % The default URL prefix.
 FUNCTION {default.name.url.prefix}{ "[Online]. Available:" }
 
@@ -262,6 +266,7 @@ ENTRY
     chapter
     day
     dayfiled
+    doi
     edition
     editor
     howpublished
@@ -299,6 +304,7 @@ ENTRY
     CTLdash_repeated_names
     CTLname_format_string
     CTLname_latex_cmd
+    CTLname_doi_prefix
     CTLname_url_prefix
   }
   {}
@@ -346,6 +352,7 @@ STRINGS { bibinfo
           ALTinterwordstretchfactor
           name.format.string
           name.latex.cmd
+          name.doi.prefix
           name.url.prefix}
 
 
@@ -367,6 +374,7 @@ FUNCTION {initialize.controls}
   default.ALTinterwordstretchfactor 'ALTinterwordstretchfactor :=
   default.name.format.string 'name.format.string :=
   default.name.latex.cmd 'name.latex.cmd :=
+  default.name.doi.prefix 'name.doi.prefix :=
   default.name.url.prefix 'name.url.prefix :=
 }
 
@@ -758,8 +766,8 @@ FUNCTION {either.or.check}
 
 FUNCTION {empty.entry.warn}
 { author empty$ title empty$ howpublished empty$
-  month empty$ year empty$ note empty$ url empty$
-  and and and and and and
+  month empty$ year empty$ note empty$ doi empty$ url empty$
+  and and and and and and and
     { "all relevant fields are empty in " cite$ * warning$ }
     'skip$
   if$
@@ -1043,6 +1051,8 @@ FUNCTION {begin.bib}
     { preamble$ write$ newline$ }
   if$
   "\begin{thebibliography}{"  longest.label  * "}" *
+  write$ newline$
+  "\providecommand{\doi}[1]{DOI:#1}"
   write$ newline$
   "\providecommand{\url}[1]{#1}"
   write$ newline$
@@ -1903,6 +1913,27 @@ cap.status.std
 
 
 
+%% DOI
+
+FUNCTION {format.doi}
+{ doi empty$
+    { "" }
+    { this.to.prev.status
+      this.status.std
+      cap.yes 'status.cap :=
+      name.doi.prefix " " *
+      "\doi{" * doi * "}" *
+      punct.no 'this.status.punct :=
+      punct.period 'prev.status.punct :=
+      space.normal 'this.status.space :=
+      space.normal 'prev.status.space :=
+      quote.no 'this.status.quote :=
+    }
+  if$
+}
+
+
+
 %% URL
 
 FUNCTION {format.url}
@@ -2079,6 +2110,10 @@ FUNCTION {inproceedings}
   format.pages output
   format.note output
   format.url output
+  pages empty$
+    { format.doi output }
+    {}
+  if$
   fin.entry
   if.url.std.interword.spacing
 }
@@ -2205,6 +2240,10 @@ FUNCTION {proceedings}
   if$
   format.note output
   format.url output
+  pages empty$
+    { format.doi output }
+    {}
+  if$
   fin.entry
   if.url.std.interword.spacing
 }
@@ -2354,6 +2393,13 @@ FUNCTION {IEEEtranBSTCTL}
     { skip$ }
     { CTLname_latex_cmd
       'name.latex.cmd :=
+    }
+  if$
+  CTLname_doi_prefix
+  missing$
+    { skip$ }
+    { CTLname_doi_prefix
+      'name.doi.prefix :=
     }
   if$
   CTLname_url_prefix
