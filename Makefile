@@ -8,7 +8,7 @@ PDF_FILES = papers/example.pdf
 
 # Tools to build before the PDF files. This is a list of executable files in
 # the bin/ directory:
-TOOLS = bin/hello
+TOOLS = 
 
 # Master build rule:
 all: $(TOOLS) $(PDF_FILES)
