@@ -1,6 +1,6 @@
 % Paper template - use as a starting point for structuring a paper.
 % Colin Perkins <csp@csperkins.org>
-% 
+
 % General advice on technical writing:
 %  - George Gopen and Judith Swan, "The Science of Scientific Writing",
 %    American Scientist, Nov/Dec 1990. 
@@ -19,10 +19,11 @@
 %  - http://www.gabbay.org.uk/blog/paper-writing.html
 %  - http://homes.cs.washington.edu/~mernst/advice/write-technical-paper.html
 
-% The \documentclass line will need to be updated to use the template for
-% the conference/journal chosen, rather than the standard article class.
-% Standard IEEE and ACM templates are included, but check the submission
-% instructions for your chosen venue.
+% The \documentclass line will need to be updated to use the appropriate
+% class for your chosen venue, rather than the standard LaTeX article
+% class. The IEEE and ACM templates are included in the lib/tex/inputs
+% subdirectory and the bin/latex-build.sh script is set to search this
+% directory for class files. 
 %
 % For the standard LaTeX article style, use:
 %   \documentclass[twocolumn,a4paper]{article}
@@ -41,6 +42,7 @@
 % been deprecated in favour of graphicx, and to fix other bugs (without any
 % change to the output formatting).
 \documentclass[twocolumn,a4paper]{article}
+
 % The following packages are recommended, and should be available in most
 % standard LaTeX installations (or from https://www.ctan.org/). Note that 
 % the order in which these packages are loaded is significant.
@@ -315,6 +317,17 @@ We structure the remainder of this paper as follows.
 % to the abbrv style.
 %\bibliographystyle{IEEEtran-doi} % For IEEE style
 \bibliographystyle{abbrvurl}     % For article and sig-alternate styles
+
+% IEEEtran.bst           - The standard IEEEtran BibTeX style file. For use
+%                          with IEEE work.
+% IEEEtranS.bst          - A version of IEEEtran.bst that sorts the entries.
+%                          Some IEEE conferences/publications may use/allow
+%                          sorted bibliographies.
+% IEEEabrv.bib           - String definitions for the abbreviated names of
+%                          IEEE journals. (For use with IEEE work.)
+% IEEEfull.bib           - String definitions for the full names of IEEE
+%                          journals. (Do not use for IEEE work.)
+
 
 % Load the bibliography:
 \bibliography{paper}
