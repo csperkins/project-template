@@ -64,5 +64,7 @@ clean:
 	$(foreach tool,$(TOOLS),rm -fr $(tool).dSYM)
 	$(foreach pdf,$(PDF_FILES),bin/latex-build.sh clean $(notdir $(basename $(pdf))) $(dir $(pdf)))
 
+.PHONY: all clean
+
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
