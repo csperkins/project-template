@@ -1,6 +1,8 @@
+%==================================================================================================
 % Paper template - use as a starting point for structuring a paper.
 % Colin Perkins <csp@csperkins.org>
-
+%
+%==================================================================================================
 % General advice on technical writing:
 %  - George Gopen and Judith Swan, "The Science of Scientific Writing",
 %    American Scientist, Nov/Dec 1990. 
@@ -18,12 +20,20 @@
 %  - http://homepages.inf.ed.ac.uk/jbednar/writingtips.html
 %  - http://www.gabbay.org.uk/blog/paper-writing.html
 %  - http://homes.cs.washington.edu/~mernst/advice/write-technical-paper.html
-
+%
+%==================================================================================================
 % The \documentclass line will need to be updated to use the appropriate
 % class for your chosen venue, rather than the standard LaTeX article
-% class. The IEEE and ACM templates are included in the lib/tex/inputs
-% subdirectory and the bin/latex-build.sh script is set to search this
-% directory for class files. 
+% class. 
+% 
+% The IEEE and ACM templates are included in the lib/tex/inputs directory.
+% The bin/latex-build.sh script is set to search this directory for class
+% files before the versions included with your LaTeX distribution. 
+% 
+% The ACM templates (sig-alternate.cls and sig-alternate-10pt.cls) included
+% have been edited to remove \usepackage{epsfig}, as the epsfig package has
+% long been deprecated in favour of graphicx. They also include a number of
+% other minor bug fixes. These modifications don't change the output format.
 %
 % For the standard LaTeX article style, use:
 %   \documentclass[twocolumn,a4paper]{article}
@@ -37,10 +47,6 @@
 %   \documentclass{sig-alternate}
 % or
 %   \documentclass{sig-alternate-10pt}
-% The sig-alternate.cls and sig-alternate-10pt.cls files included here have
-% been edited to remove \usepackage{epsfig}, as the epsfig package has long
-% been deprecated in favour of graphicx, and to fix other bugs (without any
-% change to the output formatting).
 \documentclass[twocolumn,a4paper]{article}
 
 % The following packages are recommended, and should be available in most
@@ -310,27 +316,18 @@ We structure the remainder of this paper as follows.
 % Acknowledge funding sources.
 
 %==================================================================================================
-% Set the bibliography style. The IEEEtran-doi.bst file is included here,
-% and is a modification to the standard style to include the DOI, if it's
-% present. The abbrvurl style comes from https://www.ctan.org/pkg/urlbst,
-% and is included in most standard TeX distributions, and adds DOI support 
-% to the abbrv style.
-%\bibliographystyle{IEEEtran-doi} % For IEEE style
-\bibliographystyle{abbrvurl}     % For article and sig-alternate styles
+% Set the bibliography style. 
+\bibliographystyle{abbrvurl}
+% The abbrvurl style comes from https://www.ctan.org/pkg/urlbst, and is
+% included in most standard TeX distributions. It adds support for DOIs
+% to the standard abbrv style.
+%
+% When using the IEEE style, replace the above line with:
+%   \bibliographystyle{IEEEtran} 
+% The IEEEtran.bst file included here has been modified to support DOIs.
 
-% IEEEtran.bst           - The standard IEEEtran BibTeX style file. For use
-%                          with IEEE work.
-% IEEEtranS.bst          - A version of IEEEtran.bst that sorts the entries.
-%                          Some IEEE conferences/publications may use/allow
-%                          sorted bibliographies.
-% IEEEabrv.bib           - String definitions for the abbreviated names of
-%                          IEEE journals. (For use with IEEE work.)
-% IEEEfull.bib           - String definitions for the full names of IEEE
-%                          journals. (Do not use for IEEE work.)
-
-
-% Load the bibliography:
-\bibliography{paper}
+% Load the bibliography file for this paper:
+\bibliography{example}
 
 %==================================================================================================
 % The following information gets written into the PDF file information:
