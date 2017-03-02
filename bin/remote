@@ -220,6 +220,11 @@ cmd_rmdir () {
 }
 
 cmd_rm () {
+  if [ $# -lt 2 ]; then
+    echo "insufficient arguments"
+    exit 1
+  fi
+
   project=$1
   shift
 
@@ -234,6 +239,11 @@ cmd_rm () {
 }
 
 cmd_ls () {
+  if [ $# -lt 1 ]; then
+    echo "insufficient arguments"
+    exit 1
+  fi
+
   project=$1
   shift
 
