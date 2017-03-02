@@ -58,9 +58,10 @@ REMOTE_DIR=.remote
 # server when I'm in the office (as determined by my laptop having a known
 # static IP address), with then running on the laptop otherwise.
 #
-# If REMOTE_HOST="" then "remote get" and "remote put" will do nothing, 
-# "remote ls" and "remote rm" act as "ls" and "rm", "remote run" runs
-# the command locally, and "remote ncpu" returns the number of local CPUs.
+# If REMOTE_HOST="" then "remote get" and "remote put" will do nothing, "remote
+# ls", "remote mkdir", "remote rmdir", and "remote rm" act as "ls", "mkdir",
+# "rmdir", and "rm", "remote run" runs the command locally, and "remote ncpu"
+# returns the number of local CPUs.
 
 if [ ! -f $HOME/.remoterc ]; then
   echo "error: $HOME/.remoterc is missing"
@@ -81,6 +82,8 @@ usage () {
   echo "  remote get <project> <file>       -- get file from remote project"
   echo "  remote run <project> <cmd> <args> -- run command in remote project"
   echo "  remote rm  <project> <file> ...   -- remove files from remote project"
+  echo "  remote mkdir  <project> <dir> ... -- create directories in remote"
+  echo "  remote rmdir  <project> <dir> ... -- remove directories in remote"
   echo "  remote ls  <project> <subdir>     -- list files in remote project"
   echo ""
   echo "The intent is that a Makefile fragment like:"
@@ -178,40 +181,59 @@ cmd_get () {
   fi
 }
 
-cmd_rm () {
-  if [ $# -eq 1 ]; then
-    project=$1
-    if [ -z $REMOTE_HOST ]; then
-      rmdir $REMOTE_DIR/$project
-    else 
-      ssh $REMOTE_HOST rmdir $REMOTE_DIR/$project
-    fi
+cmd_mkdir () {
+  if [ $# -lt 2 ]; then
+    echo "insufficient arguments"
+    exit 1
+  fi
+
+  project=$1
+  shift
+
+  if [ -z $REMOTE_HOST ]; then
+    mkdir $*
   else 
-    if [ $# -lt 2 ]; then
-      echo "insufficient arguments"
-      exit 1
-    fi
+    for i in $*
+    do
+      ssh $REMOTE_HOST "mkdir -p $REMOTE_DIR/$project/$i"
+    done
+  fi
+}
 
-    project=$1
-    shift
+cmd_rmdir () {
+  if [ $# -lt 2 ]; then
+    echo "insufficient arguments"
+    exit 1
+  fi
 
-    if [ -z $REMOTE_HOST ]; then
-      rm $*
-    else 
-      for i in $*
-      do
-        ssh $REMOTE_HOST "rm -f $REMOTE_DIR/$project/$i"
-      done
-    fi
+  project=$1
+  shift
+
+  if [ -z $REMOTE_HOST ]; then
+    rmdir $*
+  else 
+    for i in $*
+    do
+      ssh $REMOTE_HOST "rmdir $REMOTE_DIR/$project/$i"
+    done
+  fi
+}
+
+cmd_rm () {
+  project=$1
+  shift
+
+  if [ -z $REMOTE_HOST ]; then
+    rm $*
+  else 
+    for i in $*
+    do
+      ssh $REMOTE_HOST "rm -f $REMOTE_DIR/$project/$i"
+    done
   fi
 }
 
 cmd_ls () {
-  if [ $# -ne 1 -a $# -ne 2 ]; then
-    echo "wrong number of arguments"
-    exit 1
-  fi
-
   project=$1
   shift
 
@@ -223,7 +245,7 @@ cmd_ls () {
 }
 
 cmd_run () {
-  if [ $# -lt 3 ]; then
+  if [ $# -lt 2 ]; then
     error "insufficient arguments"
   fi
 
@@ -252,6 +274,12 @@ case $cmd in
     ;;
   get )
     cmd_get $*
+    ;;
+  mkdir )
+    cmd_mkdir $*
+    ;;
+  rmdir )
+    cmd_rmdir $*
     ;;
   rm )
     cmd_rm $*
