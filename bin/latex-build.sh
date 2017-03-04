@@ -119,7 +119,7 @@ build_pdf () {
       if [ $num_citations -gt 0 -a $done_bib = 0 ]; then
         # BibTeX has been requested and has not run already, and there are citations...
         blank_line
-        (cd $DIR_NAME && BSTINPUTS=.:../lib/tex/inputs: bibtex $TEX_BASE)
+        (cd $DIR_NAME && BST_INPUTS=.:../lib/tex/inputs: bibtex $TEX_BASE)
         if [ $? = 1 ]; then
           exit 1
         fi
@@ -136,6 +136,11 @@ build_pdf () {
   do
     DEPENDS="$DEPENDS $dep"
   done
+
+  if [ $done_bib -gt 0 ]; then
+    DEPENDS="$DEPENDS $DIR_NAME/$TEX_BASE.bib"
+  fi
+
   echo "$DIR_NAME/$TEX_BASE.pdf: $DEPENDS" > $DIR_NAME/$TEX_BASE.dep
 
   # # Call gs to embed all fonts. 
