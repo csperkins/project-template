@@ -137,7 +137,9 @@ build_pdf () {
     DEPENDS="$DEPENDS $dep"
   done
 
-  if [ $done_bib -gt 0 ]; then
+  # FIXME: this assumes the name of the .bib file. It should really parse
+  # the .tex files, to find the \bibliography{} lines
+  if [ -f $DIR_NAME/$TEX_BASE.bib ]; then
     DEPENDS="$DEPENDS $DIR_NAME/$TEX_BASE.bib"
   fi
 
