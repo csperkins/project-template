@@ -212,10 +212,7 @@ cmd_rmdir () {
   if [ -z $REMOTE_HOST ]; then
     rmdir $*
   else 
-    for i in $*
-    do
-      ssh $REMOTE_HOST "rmdir $REMOTE_DIR/$project/$i"
-    done
+    echo $* | ssh $REMOTE_HOST "(cd $REMOTE_DIR/$project && xargs rmdir)"
   fi
 }
 
@@ -231,10 +228,7 @@ cmd_rm () {
   if [ -z $REMOTE_HOST ]; then
     rm $*
   else 
-    for i in $*
-    do
-      ssh $REMOTE_HOST "rm -f $REMOTE_DIR/$project/$i"
-    done
+    echo $* | ssh $REMOTE_HOST "(cd $REMOTE_DIR/$project && xargs rm -f )"
   fi
 }
 
