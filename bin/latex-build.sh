@@ -181,8 +181,8 @@ build_pdf () {
   fi
 
   echo ""
-  echo "PDF SHA256 checksum:"
-  shasum -a 256 $DIR_NAME/$TEX_BASE.pdf
+  shasum -a   1 $DIR_NAME/$TEX_BASE.pdf | awk '{print "SHA1  ", $2, $1}'
+  shasum -a 256 $DIR_NAME/$TEX_BASE.pdf | awk '{print "SHA256", $2, $1}'
   echo ""
 
   blank_line
