@@ -26,6 +26,22 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+#
+# =================================================================================================
+# Configuration for make itself:
+
+# Warn if the Makefile references undefined variables:
+MAKEFLAGS += --warn-undefined-variables
+
+# Remove output of failed commands, to avoid confusing later runs of make:
+.DELETE_ON_ERROR:
+
+# Remove obsolete old-style default suffix rules:
+.SUFFIXES:
+
+# List of targets that don't represent files:
+.PHONY: all clean
+
 # =================================================================================================
 
 # The PDF files to build, each should have a corresponding .tex file:
@@ -88,8 +104,6 @@ clean:
 	$(call remove,$(TOOLS))
 	$(foreach tool,$(TOOLS),rm -fr $(tool).dSYM)
 	$(foreach pdf,$(PDF_FILES),bin/latex-build.sh clean $(notdir $(basename $(pdf))) $(dir $(pdf)))
-
-.PHONY: all clean
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
