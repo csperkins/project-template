@@ -84,26 +84,28 @@ CFLAGS = -W -Wall -Wextra -O2 -g -std=c99
 bin/%: src/%.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-# A function that acts like the xargs command, calling itself recursively 
-# to execute the command specified as the first paremeter for each of the
-# arguments, 1000 arguments at a time. You are not expected to understand 
-# this.
 define xargs
 $(if $(2),$(1) $(wordlist 1,1000,$(2)))
 $(if $(word 1001,$(2)),$(call xargs,$(1),$(wordlist 1001,$(words $(2)),$(2))))
 endef
 
-# A function to "rm -f" a list of files. This uses the previously defined 
-# xargs function, so works with long file lists that would otherwise fail 
-# with "argument list too long" if passed directly to the shell.
-define remove
+define rm
 $(call xargs,rm -f ,$(1))
 endef
 
+define rmdir
+$(call xargs,rm -fr ,$(1))
+endef
+
+define pdfclean
+	bin/latex-build.sh clean $(notdir $(basename $(firstword $(1)))) $(dir $(firstword $(1)))
+	$(if $(wordlist 2,$(words $(1)),$(1)),$(call pdfclean,$(wordlist 2,$(words $(1)),$(1))))
+endef
+
 clean:
-	$(call remove,$(TOOLS))
-	$(foreach tool,$(TOOLS),rm -fr $(tool).dSYM)
-	$(foreach pdf,$(PDF_FILES),bin/latex-build.sh clean $(notdir $(basename $(pdf))) $(dir $(pdf)))
+	$(call rm,$(TOOLS))
+	$(call rmdir,$(TOOLS:%=%.dSYM))
+	$(call pdfclean,$(PDF_FILES))
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
