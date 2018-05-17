@@ -53,6 +53,12 @@ MAKEFLAGS += --warn-undefined-variables
 # 2) If creating directories, use an order only prerequisite. For details:
 #    https://www.gnu.org/software/make/manual/make.html#Prerequisite-Types
 #
+# 3) The Makefile should specify dependencies, not parameters. If there's
+#    a parameter that affects the results, it should be set in a separate 
+#    file that's listed as a dependency of the results it affects. Don't
+#    use make variables for important parameters, since targets are not
+#    automatically rebuilt if a variable in the Makefile changes.
+#
 # =================================================================================================
 
 # The PDF files to build, each should have a corresponding .tex file:
