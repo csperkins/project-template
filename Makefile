@@ -2,7 +2,7 @@
 # Generic Makefile for a research paper
 # Colin Perkins <csp@csperkins.org>
 #
-# Copyright (C) 2016-2017 University of Glasgow
+# Copyright (C) 2016-2018 University of Glasgow
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -42,6 +42,17 @@ MAKEFLAGS += --warn-undefined-variables
 # List of targets that don't represent files:
 .PHONY: all clean
 
+# General hints for using make:
+#
+# 1) If extracting tar files, pass the 'm' flag to tar, to prevent it from
+#    setting the modification time of the extracted files. With this flag,
+#    the extracted files and directories have their timestamps set to the 
+#    time at which they're extracted, which will be newer than the archive
+#    so the dependences work for make.
+#
+# 2) If creating directories, use an order only prerequisite. For details:
+#    https://www.gnu.org/software/make/manual/make.html#Prerequisite-Types
+#
 # =================================================================================================
 
 # The PDF files to build, each should have a corresponding .tex file:
