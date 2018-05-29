@@ -40,7 +40,7 @@ MAKEFLAGS += --warn-undefined-variables
 .SUFFIXES:
 
 # List of targets that don't represent files:
-.PHONY: all clean
+.PHONY: all clean DOWNLOAD
 
 # General hints for using make:
 #
@@ -70,6 +70,20 @@ TOOLS =
 
 # Master build rule:
 all: $(TOOLS) $(PDF_FILES)
+
+# Example of how to download a file, with a re-download if the file
+# changes on the server. The DOWNLOAD target is marked .PHONY which
+# means it always appears out-of-date, forcing this recipe to run.
+# This recipe does a conditional download if the target exists, so
+# it only gets changed if the file on the server has changed.
+index.html: DOWNLOAD
+	@if [ -f $@ ]; then \
+		 echo "Downloading $@ (if changed)"; \
+	   curl -L --progress-bar -o $@ -z $@ https://csperkins.org/$@; \
+	 else \
+	   echo "Downloading $@"; \
+	   curl -L --progress-bar -o $@       https://csperkins.org/$@; \
+	 fi
 
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
