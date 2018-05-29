@@ -75,7 +75,7 @@ all: $(TOOLS) $(PDF_FILES)
 # changes on the server. The DOWNLOAD target is marked .PHONY which
 # means it always appears out-of-date, forcing this recipe to run.
 # This recipe does a conditional download if the target exists, so
-# it only gets changed if the file on the server has changed.
+# the target is only changed if the file on the server has changed.
 index.html: DOWNLOAD
 	@if [ -f $@ ]; then \
 		 echo "Downloading $@ (if changed)"; \
