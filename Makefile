@@ -88,6 +88,8 @@ $(2): DOWNLOAD
      echo "Download: $(1) -> $(2)"; \
      curl -L --progress-bar -o $(2)         $(1); \
    fi
+
+DOWNLOADED += $(2)
 endef
 
 # Files to download, one line for each file, with the URL and local file
@@ -152,6 +154,7 @@ define pdfclean
 endef
 
 clean:
+	$(call rm,$(DOWNLOADED))
 	$(call rm,$(TOOLS))
 	$(call rmdir,$(TOOLS:%=%.dSYM))
 	$(call pdfclean,$(PDF_FILES))
