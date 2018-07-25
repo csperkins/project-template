@@ -40,7 +40,7 @@ MAKEFLAGS += --warn-undefined-variables --no-builtin-rules --no-builtin-variable
 .SUFFIXES:
 
 # List of targets that don't represent files:
-.PHONY: all clean DOWNLOAD
+.PHONY: all clean downloads DOWNLOAD 
 
 # General hints for using make:
 #
@@ -69,7 +69,7 @@ PDF_FILES = papers/example.pdf
 TOOLS = 
 
 # Master build rule:
-all: $(TOOLS) $(PDF_FILES)
+all: downloads $(TOOLS) $(PDF_FILES)
 
 # =================================================================================================
 # Rules to download files.
@@ -89,12 +89,16 @@ $(2): DOWNLOAD
      curl -L --progress-bar -o $(2)         $(1); \
    fi
 
-DOWNLOADED += $(2)
+DOWNLOADS += $(2)
 endef
 
 # Files to download, one line for each file, with the URL and local file
-# name as the parameters:
+# name as the parameters.
 $(eval $(call download,https://csperkins.org/index.html,index.html))
+
+# This is referenced from the master build rule, to ensue downloads are
+# fetched.
+downloads: $(DOWNLOADS)
 
 # =================================================================================================
 # Rules to build PDF files and figures.
@@ -154,7 +158,7 @@ define pdfclean
 endef
 
 clean:
-	$(call rm,$(DOWNLOADED))
+	$(call rm,$(DOWNLOADS))
 	$(call rm,$(TOOLS))
 	$(call rmdir,$(TOOLS:%=%.dSYM))
 	$(call pdfclean,$(PDF_FILES))
