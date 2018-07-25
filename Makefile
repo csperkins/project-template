@@ -121,6 +121,9 @@ CFLAGS = -W -Wall -Wextra -O2 -g -std=c99
 bin/%: src/%.c
 	$(CC) $(CFLAGS) -o $@ $^
 
+# =================================================================================================
+# Clean-up rules:
+
 define xargs
 $(if $(2),$(1) $(wordlist 1,1000,$(2)))
 $(if $(word 1001,$(2)),$(call xargs,$(1),$(wordlist 1001,$(words $(2)),$(2))))
