@@ -47,9 +47,9 @@ blank_line () {
     i=`expr $i + 1`
   done
 
-  tput setaf 2 || false
+  tput setaf 2 || true
   echo $BLANK_LINE
-  tput sgr0 || false
+  tput sgr0    || true
 }
 
 # Function to display the usage message:
@@ -63,9 +63,9 @@ usage() {
 build_pdf () {
   blank_line
 
-  tput setaf 2 || false
+  tput setaf 2 || true
   echo "== Building LaTeX document: $DIR_NAME/$TEX_BASE.tex"
-  tput sgr0 || false
+  tput sgr0    || true
 
   done_bib=0
   do_bib=0
@@ -172,12 +172,12 @@ build_pdf () {
   nmf=`cat $DIR_NAME/$TEX_BASE.fonts | tail -n +3 | awk '{if ($(NF-4) != "yes") print $0}' | wc -l`
 
   if [ $nmf -gt 0 ]; then \
-    tput setaf 1  || false
-    tput bold || false
+    tput setaf 1 || true
+    tput bold    || true
     echo ""
     echo "WARNING: Some fonts are not embedded"
     echo "Try running \"updmap --edit\" and setting \"pdftexDownloadBase14 true\""
-    tput sgr0 || false
+    tput sgr0    || true
   fi
 
   echo ""
