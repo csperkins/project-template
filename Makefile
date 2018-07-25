@@ -71,19 +71,25 @@ TOOLS =
 # Master build rule:
 all: $(TOOLS) $(PDF_FILES)
 
-# Example of how to download a file, with a re-download if the file
-# changes on the server. The DOWNLOAD target is marked .PHONY which
-# means it always appears out-of-date, forcing this recipe to run.
-# This recipe does a conditional download if the target exists, so
-# the target is only changed if the file on the server has changed.
-index.html: DOWNLOAD
-	@if [ -f $@ ]; then \
-		 echo "Downloading $@ (if changed)"; \
-	   curl -L --progress-bar -o $@ -z $@ https://csperkins.org/$@; \
-	 else \
-	   echo "Downloading $@"; \
-	   curl -L --progress-bar -o $@       https://csperkins.org/$@; \
-	 fi
+# Macro to download a file, or re-download the file if it has changed on the
+# server. The DOWNLOAD target is marked .PHONY which means it always appears
+# out-of-date, forcing the defined recipe to run. Does a conditional download
+# if the target exists, so the target is only changed if the file has changed
+# on the server.
+define download =
+$(2): DOWNLOAD
+	@if [ -f $(2) ]; then \
+     echo "Download: $(1) -> $(2) (if changed)"; \
+     curl -L --progress-bar -o $(2) -z $(2) $(1); \
+   else \
+     echo "Download: $(1) -> $(2)"; \
+     curl -L --progress-bar -o $(2)         $(1); \
+   fi
+endef
+
+# Files to download, one line for each file, with the URL and local file
+# name as the parameters:
+$(eval $(call download,https://csperkins.org/index.html,index.html))
 
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
