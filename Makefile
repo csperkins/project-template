@@ -71,6 +71,9 @@ TOOLS =
 # Master build rule:
 all: $(TOOLS) $(PDF_FILES)
 
+# =================================================================================================
+# Rules to download files.
+
 # Macro to download a file, or re-download the file if it has changed on the
 # server. The DOWNLOAD target is marked .PHONY which means it always appears
 # out-of-date, forcing the defined recipe to run. Does a conditional download
@@ -90,6 +93,9 @@ endef
 # Files to download, one line for each file, with the URL and local file
 # name as the parameters:
 $(eval $(call download,https://csperkins.org/index.html,index.html))
+
+# =================================================================================================
+# Rules to build PDF files and figures.
 
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
@@ -114,6 +120,9 @@ figures/%.pdf: figures/%.gnuplot-pdf figures/%.gnuplot figures/%.dat
 figures/%.svg: figures/%.gnuplot-svg figures/%.gnuplot figures/%.dat
 	gnuplot figures/$*.gnuplot-svg figures/$*.gnuplot
 
+# =================================================================================================
+# Rules to build code.
+
 # Pattern rules to build C programs comprising a single file:
 CC     = clang
 CFLAGS = -W -Wall -Wextra -O2 -g -std=c99
@@ -122,7 +131,7 @@ bin/%: src/%.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 # =================================================================================================
-# Clean-up rules:
+# Rules to clean-up.
 
 define xargs
 $(if $(2),$(1) $(wordlist 1,1000,$(2)))
