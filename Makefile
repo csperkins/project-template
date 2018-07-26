@@ -74,6 +74,9 @@ all: downloads $(TOOLS) $(PDF_FILES)
 # =================================================================================================
 # Rules to download files.
 
+# Leave this empty; the download macro adds to it.
+DOWNLOADS = 
+
 # Macro to download a file, or re-download the file if it has changed on the
 # server. The DOWNLOAD target is marked .PHONY which means it always appears
 # out-of-date, forcing the defined recipe to run. Does a conditional download
@@ -94,7 +97,7 @@ endef
 
 # Files to download, one line for each file, with the URL and local file
 # name as the parameters.
-$(eval $(call download,https://csperkins.org/index.html,index.html))
+#$(eval $(call download,https://csperkins.org/index.html,index.html))
 
 # This is referenced from the master build rule, to ensue downloads are
 # fetched.
