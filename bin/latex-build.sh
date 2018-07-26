@@ -119,7 +119,7 @@ build_pdf () {
       if [ $num_citations -gt 0 -a $done_bib = 0 ]; then
         # BibTeX has been requested and has not run already, and there are citations...
         blank_line
-        (cd $DIR_NAME && BST_INPUTS=.:../lib/tex/inputs: bibtex $TEX_BASE)
+        (cd $DIR_NAME && BSTINPUTS=.:../lib/tex/inputs: bibtex $TEX_BASE)
         if [ $? = 1 ]; then
           exit 1
         fi
