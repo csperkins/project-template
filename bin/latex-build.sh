@@ -31,8 +31,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # =================================================================================================
 
-REGEX_CITE="LaTeX Warning: Citation.*undefined"
-REGEX_LABL="LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right."
+REGEX_CITE=".*Warning: Citation.*undefined"
+REGEX_LABL=".*Warning: Label(s) may have changed. Rerun to get cross-references right."
 REGEX_BOOK="Package rerunfilecheck Warning: File .*out. has changed"
 
 # Function to display a separator:
