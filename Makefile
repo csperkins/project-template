@@ -95,9 +95,11 @@ $(2): DOWNLOAD
 DOWNLOADS += $(2)
 endef
 
-# Files to download, one line for each file, with the URL and local file
-# name as the parameters.
-#$(eval $(call download,https://csperkins.org/index.html,index.html))
+# The files to download. Add an uncommented line like the following for each
+# file, with the URL and local file name as the parameters:
+# $(eval $(call download,https://csperkins.org/index.html,index.html))
+
+
 
 # This is referenced from the master build rule, to ensue downloads are
 # fetched.
