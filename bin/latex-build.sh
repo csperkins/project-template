@@ -33,7 +33,7 @@
 
 REGEX_CITE1=".*Warning: Citation.*undefined"
 REGEX_CITE2="There were undefined citations."
-REGEX_LABL=".*Warning: Label(s) may have changed. Rerun to get cross-references right."
+REGEX_LABEL=".*Warning: Label(s) may have changed. Rerun to get cross-references right."
 REGEX_BOOK="Package rerunfilecheck Warning: File .*out. has changed"
 
 # Function to display a separator:
@@ -83,7 +83,7 @@ build_pdf () {
     do_tex=0
 
     # Rerun LaTeX if the labels have changed
-    labl_changed=`grep -c "$REGEX_LABL" $DIR_NAME/$TEX_BASE.log`
+    labl_changed=`grep -c "$REGEX_LABEL" $DIR_NAME/$TEX_BASE.log`
     if [ $labl_changed != 0 ]; then
       do_tex=1
     fi
