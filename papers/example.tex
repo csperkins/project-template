@@ -37,31 +37,43 @@
 %  - http://homes.cs.washington.edu/~mernst/advice/write-technical-paper.html
 %  - http://dx.doi.org/10.1371/journal.pcbi.1005619
 %
+% LaTeX usage notes:
+%  - http://www.read.seas.harvard.edu/~kohler/latex.html
+%
 %==================================================================================================
 
-%\documentclass[twocolumn,a4paper]{article}
-% The \documentclass line will need to be updated to use the appropriate
-% class for your chosen venue. For IEEE style use:
-%   \documentclass[conference]{IEEEtran}
-% For the ACM SIGCOMM style use:
-\documentclass[10pt,sigconf]{acmart}
-% 
-% The IEEE and ACM templates are included in the lib/tex/inputs directory.
-% The bin/latex-build.sh script is set to search this directory for class
-% files before the versions included with your LaTeX distribution. 
+%==================================================================================================
+% The \documentclass{} macro specifies the overall style. For computer
+% networking papers, common options are:
 %
+%   \documentclass[twocolumn,a4paper]{article}  % Base LaTeX style
+%   \documentclass[conference]{IEEEtran}        % IEEE Conference
+%   \documentclass[10pt,sigconf]{acmart}        % ACM SIGCOMM conference
+%
+% The IEEE and ACM templates are included in the lib/tex/inputs directory,
+% but check for updates and use the version specified by the conference or
+% journal to which you're submitting.
+
+\documentclass[10pt,sigconf]{acmart}
+
 % The following packages are recommended, and should be available in most
 % standard LaTeX installations (or from https://www.ctan.org/). Note that 
-% the order in which these packages are loaded is significant.
-%
+% the order in which packages are loaded is significant.
+
+% Basic extensions recommended for all LaTeX documents:
+%   nag        Warn about common problems with LaTeX files
+%   inputenc   Specify the character set used in .tex files
+%   babel      Language-specific typography and hyphenation
+%   microtype  Improved typography when generating PDF files
+
 \usepackage[l2tabu,orthodox]{nag}
 \usepackage[utf8x]{inputenc}
 \usepackage[british]{babel}
 \usepackage{ifpdf}
 \ifpdf
-  \usepackage[babel=true]{microtype}
+  \usepackage{microtype}
 \fi
-%
+
 % The AMS mathematics library greatly extends and improves mathematics
 % support in LaTeX (see http://ctan.org/pkg/amsmath for details). When
 %  preparing multi-line numbered equations, be sure to use:
@@ -78,10 +90,12 @@
 %
 % when this package is loaded, to ensure they formatting is consistent
 % (see https://tug.org/pracjourn/2006-4/madsen/madsen.pdf for details).
+
 \usepackage{amsmath}
 \usepackage[all]{onlyamsmath}
-%
+
 % Use Times, Helvetica, and Courier fonts, rather than Computer Modern:
+
 \makeatletter
 \@ifclassloaded{acmart}{
   % The ACM article style sets the fonts internally
@@ -90,8 +104,9 @@
   \usepackage{newtxmath}
 }
 \makeatother
+
+% Add support for sub-figures within a figure, as follows:
 %
-% Add support for subfigures, as follows:
 %   \begin{figure}
 %     \centering
 %     \subfloat[caption for 1st subfloat]{
@@ -106,14 +121,15 @@
 %     \caption{caption for entire figure}
 %     \label{...}
 %   \end{figure*}
+%
 % The subfig package obsoletes the older subfigure package, and is itself
 % deprecated in favour of the subcaption package. However, as of April 2015
 % subcaption doesn't work with ACM or IEEE style files (this is also the
 % reason for the [caption=false] option).
+
 \usepackage[caption=false]{subfig}
-%
-% The booktabs package improves table formatting. To produce well-formatted
-% tables:
+
+% Improve formatting of tables. To produce nice looking tables:
 %
 %   - avoid vertical lines;
 %   - avoid double horizontal lines;
@@ -135,20 +151,42 @@
 %        Line4   & ...     & ...     \\
 %     \bottomrule
 %   \end{tabular}
-%
+
 \usepackage{booktabs}
-%
+
+% Improve formatting for quote marks in verbatim mode:
 \usepackage{upquote}
+
+% Improve support for graphics:
 \usepackage{graphicx}
+
+% Add support for URLs using \url{...}. This formats the URL in typewriter
+% font, and makes it a hyperlink if the hyperref package is also loaded.
 \usepackage{url}
-% Add support for drawing network packet diagrams. For documentation, see
+
+% Add support for drawing packet headers. For instructions, see
 % http://ctan.org/tex-archive/macros/latex/contrib/bytefield
 \usepackage{bytefield}
-% Add support for typesetting program source code. For documentation, see
-% http://ctan.org/tex-archive/macros/latex/contrib/listings
+
+% Add support for typesetting program source code. You can either include
+% code in-line:
+%
+%   \begin{lstlisting}[language=Python]
+%   Source code goes here
+%   \end{lstlisting}
+%
+% or include a source file:
+%
+%  \lstinputlisting[language=Python]{source_filename.py}
+%
+% This package is highly customisable and supports a range of languages.
+% See package documentation at https://ctan.org/pkg/listings for details.
 \usepackage{listings}
 
-% The hyperref package is problematic. Known issues include:
+% Generated PDF files can include hyperlinks for URLs and cross-references
+% using the hyperref package. This package, however, can interact poorly
+% with others. Known issues include:
+%
 %  - Papers typeset without page numbers gives warnings of the form:
 %      "pdfTeX warning (ext4): destination with the same identifier 
 %      (name{page.}) has been already used, duplicate ignored".
@@ -175,13 +213,17 @@
 \usepackage{algpseudocode}
 \usepackage{color}
 
+% By default, LaTeX adds extra space after punctuation. The \frenchspacing
+% command disables this. This creates tighter looking, more even, text and
+% avoids inconsistencies if you forget to use '\ ' to suppress the spacing
+% after in-sentence punctuation.
 \frenchspacing
 
-% Define a simple \todo{...} macro:
-\newcommand{\todo}[1]{\textbf{\textcolor{red}{To do: #1}}}
+% Prevent hyphenation of all upper case words:
+\uchyph=0
 
 % The ACM style needs \maketitle after the abstract, but the other styles
-% want it before; these macros hide the difference:
+% want it before; these macros hide the difference and are used below:
 \makeatletter
 \@ifclassloaded{acmart}{
   \newcommand{\maketitleSTD}{}
@@ -192,24 +234,28 @@
 }
 \makeatother
 
-% Add hyphenation rules for common terms in networking papers:
-\hyphenation{HTTP/1.1}
-\hyphenation{HTTP/2}
-% Prevent hyphenation of all upper case words:
-\uchyph=0
+% Define a simple \todo{...} macro:
+\newcommand{\todo}[1]{\textbf{\textcolor{red}{To do: #1}}}
 
 %==================================================================================================
 \begin{document}
+% Specify the title of the document:
+
 \title{...}
 
-% Uncomment one of the following author blocks, depending on the template used.
-% For article class:
-%\author{
-%  A. N. Other\\University of Glasgow
-%\and
-%  Colin Perkins\\University of Glasgow
-%}
-% For IEEEtran class:
+% Specify the authors of the document. Unfortunately, there's no consistent
+% way to do this that works across the different document classes. 
+%
+% If using \documentclass{article}:
+%
+%   \author{
+%      A. N. Other\\University of Glasgow
+%   \and
+%      Colin Perkins\\University of Glasgow
+%   }
+%
+% If using \documentclass{IEEEtran}:
+%
 %   \author{
 %     \IEEEauthorblockN{A. N. Other}
 %     \IEEEauthorblockA{University of Glasgow}
@@ -218,39 +264,64 @@
 %     \IEEEauthorblockA{University of Glasgow}
 %   }
 %
-% For the acmart class, add a block like the following for each author:
-   \author{Colin Perkins}
-   \orcid{0000-0002-3404-8964}
-   \affiliation{
-     \institution{University of Glasgow}
-     \streetaddress{School of Computing Science}
-     \city{Glasgow}
-     \postcode{G12 8QQ}
-     \country{UK}
-   }
-   \email{csp@csperkins.org}
+% If using \documentclass{acmart} add a block like the following per author:
+%
+%   \author{Colin Perkins}
+%   \orcid{0000-0002-3404-8964}
+%   \affiliation{
+%     \institution{University of Glasgow}
+%     \streetaddress{School of Computing Science}
+%     \city{Glasgow}
+%     \postcode{G12 8QQ}
+%     \country{UK}
+%   }
+%   \email{csp@csperkins.org}
+%
+% If you don't have an ORCID identifier, sign up for one at https://orcid.org
 
-% The ACM also requires metadata as follows:
-   \acmYear{2018}
-   \copyrightyear{2018}
-   \setcopyright{acmcopyright}
-   \acmConference{CoNEXT '18}{December 4--7, 2018}{Heraklion/Crete, Greece}
-   \acmPrice{TBA}
-   \acmDOI{TBA}
-   \acmISBN{TBA}
+\author{Colin Perkins}
+\orcid{0000-0002-3404-8964}
+\affiliation{
+  \institution{University of Glasgow}
+  \streetaddress{School of Computing Science}
+  \city{Glasgow}
+  \postcode{G12 8QQ}
+  \country{UK}
+}
+\email{csp@csperkins.org}
 
-\date{\today}
+% Specify metadata about the paper. Again, what is required depends on the
+% document class. If using \documentclass{acmart}, specify the following:
+%
+%   \acmYear{2018}
+%   \copyrightyear{2018}
+%   \setcopyright{acmcopyright}
+%   \acmConference{CoNEXT '18}{December 4--7, 2018}{Heraklion/Crete, Greece}
+%   \acmPrice{15.00}
+%   \acmDOI{10.1145/3284850.3284856}
+%   \acmISBN{978-1-4503-6082-1/18/12}
+%
+% The complete metadata is likely only available when preparing the final,
+% camera ready, version of the paper.
+
+\acmYear{2018}
+\copyrightyear{2018}
+\setcopyright{acmcopyright}
+\acmConference{CoNEXT '18}{December 4--7, 2018}{Heraklion/Crete, Greece}
+\acmPrice{15.00}
+\acmDOI{10.1145/3284850.3284856}
+\acmISBN{978-1-4503-6082-1/18/12}
+
 %==================================================================================================
 \maketitleSTD
 \begin{abstract}
+  % Four sentences:
+  %  - State the problem
+  %  - Say why it's an interesting problem
+  %  - Say what your solution achieves
+  %  - Say what follows from your solution
 
-% Four sentences:
-%  - State the problem
-%  - Say why it's an interesting problem
-%  - Say what your solution achieves
-%  - Say what follows from your solution
-
-difficult
+  The abstract goes here.
 
 \end{abstract}
 \maketitleACM
@@ -383,17 +454,16 @@ We structure the remainder of this paper as follows.
 % Acknowledge funding sources.
 
 %==================================================================================================
-% Set the bibliography style. 
-\bibliographystyle{abbrvurl}
-% The abbrvurl style comes from https://www.ctan.org/pkg/urlbst, and is
-% included in most standard TeX distributions. It adds support for DOIs
-% to the standard abbrv style.
+% Set the bibliography style. Choose one of the following, depending on the
+% document class being used:
 %
-% When using the IEEE style, replace the above line with:
-%   \bibliographystyle{IEEEtran} 
-% The IEEEtran.bst file included here has been modified to support DOIs.
+%   \bibliographystyle{abbrv}                 When using article class
+%   \bibliographystyle{IEEEtran}              When using IEEE style
+%   \bibliographystyle{ACM-Reference-Format}  When using ACM style
 
-% Load the bibliography file for this paper:
+\bibliographystyle{ACM-Reference-Format}
+
+% Load the bibliography file(s) for this paper:
 \bibliography{example}
 
 %==================================================================================================
@@ -410,10 +480,9 @@ We structure the remainder of this paper as follows.
     /Producer     (pdfTeX)
   }
   % Suppress unnecessary metadata, to ensure the PDF generated by pdflatex is
-  % identical each time it is built:
+  % identical each time it is built. This needs pdfTeX 3.14159265-2.6-1.40.17
+  % or later.
   \ifdefined\pdftrailerid
-    % The \pdftrailerid and \pdfsuppressptexinfo macros were both introduced 
-    % in pdfTeX 3.14159265-2.6-1.40.17. If one is present, the other will be.
     \pdftrailerid{}
     \pdfsuppressptexinfo=15
   \fi
