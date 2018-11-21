@@ -35,62 +35,62 @@
 %  - http://homepages.inf.ed.ac.uk/jbednar/writingtips.html
 %  - http://www.gabbay.org.uk/blog/paper-writing.html
 %  - http://homes.cs.washington.edu/~mernst/advice/write-technical-paper.html
-%  - https://doi.org/10.1371/journal.pcbi.1005619
+%  - http://dx.doi.org/10.1371/journal.pcbi.1005619
 %
 %==================================================================================================
-\documentclass[twocolumn,a4paper]{article}
+
+%\documentclass[twocolumn,a4paper]{article}
 % The \documentclass line will need to be updated to use the appropriate
-% class for your chosen venue. 
-% 
-% For IEEE style use:
+% class for your chosen venue. For IEEE style use:
 %   \documentclass[conference]{IEEEtran}
-%
 % For the ACM SIGCOMM style use:
-%   \documentclass{sig-alternate}
-% or
-%   \documentclass{sig-alternate-10pt}
+\documentclass[10pt,sigconf]{acmart}
 % 
 % The IEEE and ACM templates are included in the lib/tex/inputs directory.
 % The bin/latex-build.sh script is set to search this directory for class
 % files before the versions included with your LaTeX distribution. 
-% 
-% The ACM templates (sig-alternate.cls and sig-alternate-10pt.cls) included
-% have been edited to remove \usepackage{epsfig}, as the epsfig package has
-% long been deprecated in favour of graphicx. They also include a number of
-% other minor bug fixes. These modifications don't change the output format.
-
+%
 % The following packages are recommended, and should be available in most
 % standard LaTeX installations (or from https://www.ctan.org/). Note that 
 % the order in which these packages are loaded is significant.
-\usepackage[l2tabu,orthodox]{nag}  % Warn about use of obsolete LaTeX packages/constructs
-\usepackage[utf8x]{inputenc}       % This file is formatted in UTF-8
-\usepackage[british]{babel}        % Use British hyphenation patterns
-\usepackage{ifpdf}                 % Support conditional use of PDF-specific features
+%
+\usepackage[l2tabu,orthodox]{nag}
+\usepackage[utf8x]{inputenc}
+\usepackage[british]{babel}
+\usepackage{ifpdf}
 \ifpdf
-  % The microtype package offers improved typography when used with pdflatex.
-  % This has the side effect of fixing the broken justification when the ACM
-  % style is used with pdflatex. It also tends to increase the amount of text
-  % that can fit on a page sligthly. Only works with PDF output.
   \usepackage[babel=true]{microtype}
 \fi
-% Use the AMS mathematics library for improved mathematics support (see
-% http://ctan.org/pkg/amsmath). When this package is loaded, use:
+%
+% The AMS mathematics library greatly extends and improves mathematics
+% support in LaTeX (see http://ctan.org/pkg/amsmath for details). When
+%  preparing multi-line numbered equations, be sure to use:
+%
 %   \begin{align}
 %     ...
 %   \end{align} 
-% instead of:
+%
+% rather than:
+%
 %   \begin{eqnarray}
 %     ...
 %   \end{eqnarray}.  
-% (see https://tug.org/pracjourn/2006-4/madsen/madsen.pdf)
+%
+% when this package is loaded, to ensure they formatting is consistent
+% (see https://tug.org/pracjourn/2006-4/madsen/madsen.pdf for details).
 \usepackage{amsmath}
 \usepackage[all]{onlyamsmath}
-% Use Times, Helvetica, and Courier fonts, rather than Computer Modern
-\usepackage{newtxtext} 
-\usepackage{newtxmath} 
-\usepackage{upquote}   % Fix quotes in verbatim environments
-\usepackage{graphicx}  % Enhanced graphics support
-\usepackage{url}       % Add support for typesetting URLs using \url{...}:
+%
+% Use Times, Helvetica, and Courier fonts, rather than Computer Modern:
+\makeatletter
+\@ifclassloaded{acmart}{
+  % The ACM article style sets the fonts internally
+}{
+  \usepackage{newtxtext}
+  \usepackage{newtxmath}
+}
+\makeatother
+%
 % Add support for subfigures, as follows:
 %   \begin{figure}
 %     \centering
@@ -111,10 +111,36 @@
 % subcaption doesn't work with ACM or IEEE style files (this is also the
 % reason for the [caption=false] option).
 \usepackage[caption=false]{subfig}
-% Improve table formatting. This defines three new commands \toprule,
-% \midrule, and \bottomrule that should be used instead of \hline in
-% tabular environments to get well formatted tables.
+%
+% The booktabs package improves table formatting. To produce well-formatted
+% tables:
+%
+%   - avoid vertical lines;
+%   - avoid double horizontal lines;
+%   - use horizontal lines above and below the table, and to separate the
+%     header from the body of the table, but not elsewhere; and
+%   - if in doubt, align columns to the left (columns of numbers should
+%     align to the decimal point)
+%
+% This translates to a tabular environment that looks something like the
+% following:
+%
+%   \begin{tabular}{lll}
+%     \toprule
+%        Header1 & Header2 & Header3 \\
+%     \midrule
+%        Line1   & ...     & ...     \\
+%        Line2   & ...     & ...     \\
+%        Line3   & ...     & ...     \\
+%        Line4   & ...     & ...     \\
+%     \bottomrule
+%   \end{tabular}
+%
 \usepackage{booktabs}
+%
+\usepackage{upquote}
+\usepackage{graphicx}
+\usepackage{url}
 % Add support for drawing network packet diagrams. For documentation, see
 % http://ctan.org/tex-archive/macros/latex/contrib/bytefield
 \usepackage{bytefield}
@@ -147,23 +173,35 @@
 % algorithms: http://ctan.org/tex-archive/macros/latex/contrib/algorithmicx
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{color}
 
-\usepackage{color} % Add colour support:
+\frenchspacing
 
 % Define a simple \todo{...} macro:
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{To do: #1}}}
 
+% The ACM style needs \maketitle after the abstract, but the other styles
+% want it before; these macros hide the difference:
+\makeatletter
+\@ifclassloaded{acmart}{
+  \newcommand{\maketitleSTD}{}
+  \newcommand{\maketitleACM}{\maketitle}
+}{
+  \newcommand{\maketitleSTD}{\maketitle}
+  \newcommand{\maketitleACM}{}
+}
+\makeatother
 %==================================================================================================
 \begin{document}
 \title{...}
 
 % Uncomment one of the following author blocks, depending on the template used.
 % For article class:
-\author{
-  A. N. Other\\University of Glasgow
-\and 
-  Colin Perkins\\University of Glasgow
-}
+%\author{
+%  A. N. Other\\University of Glasgow
+%\and
+%  Colin Perkins\\University of Glasgow
+%}
 % For IEEEtran class:
 %   \author{
 %     \IEEEauthorblockN{A. N. Other}
@@ -172,20 +210,31 @@
 %     \IEEEauthorblockN{Colin Perkins}
 %     \IEEEauthorblockA{University of Glasgow}
 %   }
-% For sig-alternate class:
-%  \numberofauthors{2}
-%  \author{
-%    \alignauthor A. N. Other\\
-%    \affaddr{University of Glasgow}\\
-%    \email{a.n.other@glasgow.ac.uk}
-%    \alignauthor Colin Perkins\\
-%    \affaddr{University of Glasgow}\\
-%    \email{csp@csperkins.org}
-%  }
+%
+% For the acmart class, add a block like the following for each author:
+   \author{Colin Perkins}
+   \orcid{0000-0002-3404-8964}
+   \affiliation{
+     \institution{University of Glasgow}
+     \streetaddress{School of Computing Science}
+     \city{Glasgow}
+     \postcode{G12 8QQ}
+     \country{UK}
+   }
+   \email{csp@csperkins.org}
+
+% The ACM also requires metadata as follows:
+   \acmYear{2018}
+   \copyrightyear{2018}
+   \setcopyright{acmcopyright}
+   \acmConference{CoNEXT '18}{December 4--7, 2018}{Heraklion/Crete, Greece}
+   \acmPrice{TBA}
+   \acmDOI{TBA}
+   \acmISBN{TBA}
 
 \date{\today}
-\maketitle
 %==================================================================================================
+\maketitleSTD
 \begin{abstract}
 
 % Four sentences:
@@ -194,9 +243,10 @@
 %  - Say what your solution achieves
 %  - Say what follows from your solution
 
-
+difficult
 
 \end{abstract}
+\maketitleACM
 %==================================================================================================
 \section{Introduction}
 
