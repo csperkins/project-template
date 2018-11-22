@@ -111,7 +111,7 @@ downloads: $(DOWNLOADS)
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
 %.pdf: %.tex 
-	@bin/latex-build.sh pdf $(notdir $(basename $<)) $(dir $<)
+	@bin/latex-build.sh $<
 	@bin/check-for-duplicate-words.perl $<
 	@bin/check-for-todo.sh              $<
 
@@ -158,7 +158,7 @@ $(call xargs,rm -fr ,$(1))
 endef
 
 define pdfclean
-	bin/latex-build.sh clean $(notdir $(basename $(firstword $(1)))) $(dir $(firstword $(1)))
+	@bin/latex-build.sh --clean $(basename $(firstword $(1)))
 	$(if $(wordlist 2,$(words $(1)),$(1)),$(call pdfclean,$(wordlist 2,$(words $(1)),$(1))))
 endef
 
