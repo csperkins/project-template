@@ -102,8 +102,11 @@ else
     SHOULD_RUN_BIB=0
     SHOULD_RUN_TEX=0
 
-    # FIXME: if lib/tex/inputs exists, add to TEXINPUTS 
-    TEXINPUTS=$DIR_NAME: pdflatex -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
+    TEXINPUTS=$DIR_NAME:
+    if [ -d `pwd`/lib/tex/inputs ]; then
+      TEXINPUTS=$TEXINPUTS:`pwd`/lib/tex/inputs
+    fi
+    TEXINPUTS=$TEXINPUTS: pdflatex -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
     if [ $? = 1 ]; then
       exit 1
     fi
