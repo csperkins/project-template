@@ -40,7 +40,7 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 .SUFFIXES:
 
 # List of targets that don't represent files:
-.PHONY: all clean DOWNLOAD
+.PHONY: all clean .DOWNLOAD
 
 # General hints for using make:
 #
@@ -75,10 +75,10 @@ all: $(TOOLS) $(PDF_FILES)
 # Rules to download files.
 
 # Use the bin/download.sh script to download files, as shown in the example
-# below. The dependency on the phony DOWNLOAD target forces the script to
+# below. The dependency on the phony .DOWNLOAD target forces the script to
 # run, allowing it to re-download the file if it's changed on the server.
 
-index.html: bin/download.sh DOWNLOAD
+index.html: bin/download.sh .DOWNLOAD
 	@bin/download.sh https://csperkins.org/index.html $@
 
 # =================================================================================================
