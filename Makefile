@@ -130,23 +130,14 @@ $(if $(2),$(1) $(wordlist 1,1000,$(2)))
 $(if $(word 1001,$(2)),$(call xargs,$(1),$(wordlist 1001,$(words $(2)),$(2))))
 endef
 
-define rm
+define remove
 $(call xargs,rm -f ,$(1))
 endef
 
-define rmdir
-$(call xargs,rm -fr ,$(1))
-endef
-
-define pdfclean
-	@bin/latex-build.sh --clean $(basename $(firstword $(1)))
-	$(if $(wordlist 2,$(words $(1)),$(1)),$(call pdfclean,$(wordlist 2,$(words $(1)),$(1))))
-endef
-
 clean:
-	$(call rm,$(TOOLS))
-	$(call rmdir,$(TOOLS:%=%.dSYM))
-	$(call pdfclean,$(PDF_FILES))
+	$(call remove,$(TOOLS))
+	$(foreach tool,$(TOOLS),rm -rf $(tool).dSYM)
+	@$(foreach pdf,$(PDF_FILES),bin/latex-build.sh --clean $(pdf:%.pdf=%.tex))
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
