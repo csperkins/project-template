@@ -40,7 +40,7 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 .SUFFIXES:
 
 # List of targets that don't represent files:
-.PHONY: all clean downloads DOWNLOAD 
+.PHONY: all clean DOWNLOAD
 
 # General hints for using make:
 #
@@ -69,41 +69,17 @@ PDF_FILES = papers/example.pdf
 TOOLS = 
 
 # Master build rule:
-all: downloads $(TOOLS) $(PDF_FILES)
+all: $(TOOLS) $(PDF_FILES)
 
 # =================================================================================================
 # Rules to download files.
 
-# Leave this empty; the download macro adds to it.
-DOWNLOADS = 
+# Use the bin/download.sh script to download files, as shown in the example
+# below. The dependency on the phony DOWNLOAD target forces the script to
+# run, allowing it to re-download the file if it's changed on the server.
 
-# Macro to download a file, or re-download the file if it has changed on the
-# server. The DOWNLOAD target is marked .PHONY which means it always appears
-# out-of-date, forcing the defined recipe to run. Does a conditional download
-# if the target exists, so the target is only changed if the file has changed
-# on the server.
-define download =
-$(2): DOWNLOAD
-	@if [ -f $(2) ]; then \
-     echo "Download: $(1) -> $(2) (if changed)"; \
-     curl -L --progress-bar -o $(2) -z $(2) $(1); \
-   else \
-     echo "Download: $(1) -> $(2)"; \
-     curl -L --progress-bar -o $(2)         $(1); \
-   fi
-
-DOWNLOADS += $(2)
-endef
-
-# The files to download. Add an uncommented line like the following for each
-# file, with the URL and local file name as the parameters:
-# $(eval $(call download,https://csperkins.org/index.html,index.html))
-
-
-
-# This is referenced from the master build rule, to ensue downloads are
-# fetched.
-downloads: $(DOWNLOADS)
+index.html: bin/download.sh DOWNLOAD
+	@bin/download.sh https://csperkins.org/index.html $@
 
 # =================================================================================================
 # Rules to build PDF files and figures.
@@ -163,7 +139,6 @@ define pdfclean
 endef
 
 clean:
-	$(call rm,$(DOWNLOADS))
 	$(call rm,$(TOOLS))
 	$(call rmdir,$(TOOLS:%=%.dSYM))
 	$(call pdfclean,$(PDF_FILES))
