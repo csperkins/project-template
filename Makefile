@@ -72,7 +72,7 @@ TOOLS =
 all: $(TOOLS) $(PDF_FILES)
 
 # =================================================================================================
-# Rules to download files.
+# Project specific rules to download files:
 
 # Use the bin/download.sh script to download files, as shown in the example
 # below. The dependency on the phony .DOWNLOAD target forces the script to
@@ -82,7 +82,12 @@ index.html: bin/download.sh .DOWNLOAD
 	@bin/download.sh https://csperkins.org/index.html $@
 
 # =================================================================================================
-# Rules to build PDF files and figures.
+# Project specific rules:
+
+
+
+# =================================================================================================
+# Generic rules to build PDF files and figures:
 
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
@@ -108,7 +113,7 @@ figures/%.svg: figures/%.gnuplot-svg figures/%.gnuplot figures/%.dat
 	gnuplot figures/$*.gnuplot-svg figures/$*.gnuplot
 
 # =================================================================================================
-# Rules to build code.
+# Generic rules to build code:
 
 # Pattern rules to build C programs comprising a single file:
 CC     = clang
@@ -118,7 +123,7 @@ bin/%: src/%.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 # =================================================================================================
-# Rules to clean-up.
+# Generic rules to clean-up:
 
 define xargs
 $(if $(2),$(1) $(wordlist 1,1000,$(2)))
