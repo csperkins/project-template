@@ -126,18 +126,23 @@ bin/%: src/%.c
 # Generic rules to clean-up:
 
 define xargs
-$(if $(2),$(1) $(wordlist 1,1000,$(2)))
-$(if $(word 1001,$(2)),$(call xargs,$(1),$(wordlist 1001,$(words $(2)),$(2))))
+$(if $(2),$(1) $(firstword $(2)))
+$(if $(word 2,$(2)),$(call xargs,$(1),$(wordlist 2,$(words $(2)),$(2))))
 endef
 
 define remove
-$(call xargs,rm -f ,$(1))
+$(call xargs,rm -f,$(1))
+endef
+
+define remove-latex
+$(call xargs,bin/latex-build.sh --clean,$(1))
 endef
 
 clean:
 	$(call remove,$(TOOLS))
 	$(foreach tool,$(TOOLS),rm -rf $(tool).dSYM)
-	@$(foreach pdf,$(PDF_FILES),bin/latex-build.sh --clean $(pdf:%.pdf=%.tex))
+	@$(call remove-latex,$(PDF_FILES:%.pdf=%.tex))
+
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
