@@ -40,7 +40,7 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 .SUFFIXES:
 
 # List of targets that don't represent files:
-.PHONY: all clean .DOWNLOAD
+.PHONY: all clean git-revision .DOWNLOAD 
 
 # General hints for using make:
 #
@@ -69,7 +69,7 @@ PDF_FILES = papers/example.pdf
 TOOLS = 
 
 # Master build rule:
-all: $(TOOLS) $(PDF_FILES)
+all: git-revision $(TOOLS) $(PDF_FILES) 
 
 # =================================================================================================
 # Project specific rules to download files:
@@ -85,6 +85,15 @@ index.html: bin/download.sh .DOWNLOAD
 # Project specific rules:
 
 
+
+# =================================================================================================
+# Generic rule to record the current git revision:
+
+# This is is a real file, but is marked as .PHONY above so the script always
+# executes. The script only write to the file if the revision has changed.
+
+git-revision: bin/git-revision.sh
+	@bin/git-revision.sh $@
 
 # =================================================================================================
 # Generic rules to build PDF files and figures:
@@ -139,6 +148,7 @@ $(call xargs,bin/latex-build.sh --clean,$(1))
 endef
 
 clean:
+	$(call remove,git-revision)
 	$(call remove,$(TOOLS))
 	$(foreach tool,$(TOOLS),rm -rf $(tool).dSYM)
 	@$(call remove-latex,$(PDF_FILES:%.pdf=%.tex))
