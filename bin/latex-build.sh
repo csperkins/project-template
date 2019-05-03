@@ -87,7 +87,7 @@ if [ $MODE = "clean" ]; then
            $DIR_NAME/$TEX_BASE.fonts
   do
     if [ -f $f ]; then
-      echo "rm $f" && rm -f $f
+      echo "rm -f $f" && rm -f $f
     fi
   done
 else
