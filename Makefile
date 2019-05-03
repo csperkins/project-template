@@ -1,8 +1,8 @@
 # =================================================================================================
 # Generic Makefile for a research paper
-# Colin Perkins <csp@csperkins.org>
 #
-# Copyright (C) 2016-2018 University of Glasgow
+# Colin Perkins <csp@csperkins.org>
+# Copyright (C) 2016-2019 University of Glasgow
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -26,22 +26,8 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+
 # =================================================================================================
-# Configuration for make itself:
-
-# Warn if the Makefile references undefined variables and remove built-in rules:
-MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-builtin-variables
-
-# Remove output of failed commands, to avoid confusing later runs of make:
-.DELETE_ON_ERROR:
-
-# Remove obsolete old-style default suffix rules:
-.SUFFIXES:
-
-# List of targets that don't represent files:
-.PHONY: all clean git-revision .DOWNLOAD 
-
 # General hints for using make:
 #
 # 1) If extracting tar files, pass the 'm' flag to tar, to prevent it from
@@ -58,8 +44,26 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 #    file that's listed as a dependency of the results it affects. Don't
 #    use make variables for important parameters, since targets are not
 #    automatically rebuilt if a variable in the Makefile changes.
-#
+
 # =================================================================================================
+# Configuration for make:
+#
+# Nothing in this section should need to change on a per-project basis.
+
+# Warn if the Makefile references undefined variables and remove built-in rules:
+MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-builtin-variables
+
+# Remove output of failed commands, to avoid confusing later runs of make:
+.DELETE_ON_ERROR:
+
+# Remove obsolete old-style default suffix rules:
+.SUFFIXES:
+
+# List of targets that don't represent files:
+.PHONY: all clean check-make git-revision check-downloads
+
+# =================================================================================================
+# Configuration for the project:
 
 # The PDF files to build, each should have a corresponding .tex file:
 PDF_FILES = papers/example.pdf
@@ -69,29 +73,52 @@ PDF_FILES = papers/example.pdf
 TOOLS = 
 
 # Master build rule:
-all: git-revision $(TOOLS) $(PDF_FILES) 
+all: check-make git-revision $(TOOLS) $(PDF_FILES) 
 
 # =================================================================================================
 # Project specific rules to download files:
+#
+# The bin/download.sh script can be used to download files if they don't exist
+# or have changed on the server, as shown in the example below. The downloaded
+# files should depend on the bin/download.sh script and on the check-downloads
+# target. Each downloaded file must be added to $(DOWNLOADS) so the "download"
+# and "clean" targets work.
 
-# Use the bin/download.sh script to download files, as shown in the example
-# below. The dependency on the phony .DOWNLOAD target forces the script to
-# run, allowing it to re-download the file if it's changed on the server.
-
-index.html: bin/download.sh .DOWNLOAD
+index.html: bin/download.sh check-downloads
 	@bin/download.sh https://csperkins.org/index.html $@
+
+DOWNLOADS = index.html
+
+# Rule to manually downloads. This shouldn't be referenced in other rules, they
+# should depend on the downloaded files.
+download: $(DOWNLOADS)
+
+# This is marked as .PHONY above and must not depend on any real files. When
+# make runs it will see this as being out-of-date, triggering the downloads.
+check-downloads:
 
 # =================================================================================================
 # Project specific rules:
+#
+# Add rules to build $(TOOLS) here (there is a generic rule to build a single
+# C source file into an executable below):
+
+
+
+# Add rules to build the dependencies of $(PDF_FILES) here:
 
 
 
 # =================================================================================================
-# Generic rule to record the current git revision:
+# Generic rules:
 
-# This is is a real file, but is marked as .PHONY above so the script always
-# executes. The script only write to the file if the revision has changed.
+# This Makefile requires GNU make:
+check-make:
+	$(if $(findstring GNU Make,$(shell $(MAKE) --version)),,$(error Not GNU make))
 
+# Record the git revision for the repository. This is a real file but is marked
+# as .PHONY above so the recipe always executes. The bin/git-revision.sh script
+# only writes to the output file if the revision has changed.
 git-revision: bin/git-revision.sh
 	@bin/git-revision.sh $@
 
@@ -149,10 +176,10 @@ endef
 
 clean:
 	$(call remove,git-revision)
+	$(call remove,$(DOWNLOADS))
 	$(call remove,$(TOOLS))
 	$(foreach tool,$(TOOLS),rm -rf $(tool).dSYM)
 	@$(call remove-latex,$(PDF_FILES:%.pdf=%.tex))
-
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
