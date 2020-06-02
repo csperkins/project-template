@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $# != 1 ]; then
+if [ $# -ne 1 ]; then
   echo "Usage: git-revision.sh <outputfile>"
   exit 1
 fi
@@ -8,7 +8,7 @@ fi
 REV=`git rev-parse --verify HEAD`
 
 git diff --no-ext-diff --quiet --exit-code
-if [ $? == 1 ]; then
+if [ $? -eq 1 ]; then
   MOD="++"
 else
   MOD=""
