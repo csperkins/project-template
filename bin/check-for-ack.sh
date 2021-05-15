@@ -8,7 +8,7 @@ fi
 for i in $*
 do
   # Find instances of \section{Acknowledgements} that are not commented out:
-  c=`egrep -c -i -n '\\\\section.?\\{Acknowledgements' $i`
+  c=`egrep -c -i -n '^\\\\section.?\\{Acknowledgements' $i`
   if [ $c != 1 ]; then
     tput setaf 1 || true
     echo "WARNING: missing acknowledgements section?"
