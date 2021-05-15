@@ -131,6 +131,7 @@ git-revision: bin/git-revision.sh
 	@bin/latex-build.sh $<
 	@bin/check-for-duplicate-words.perl $<
 	@bin/check-for-todo.sh              $<
+	@bin/check-for-ack.sh               $<
 
 # Include dependency information for PDF files, if it exists:
 -include $(PDF_FILES:%.pdf=%.dep)
