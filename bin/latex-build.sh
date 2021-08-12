@@ -69,8 +69,6 @@ TEX_BASE=`basename $1 .tex`
 DIR_NAME=`dirname  $1`
 
 if [ $MODE = "clean" ]; then
-  log "## Cleaning LaTeX document: $DIR_NAME/$TEX_BASE.tex"
-
   OUTPUTS=""
   if [ -f $DIR_NAME/$TEX_BASE.fls ]; then
     for output in `cat $DIR_NAME/$TEX_BASE.fls | sort | uniq | awk '/^OUTPUT/ {print $2}'`
