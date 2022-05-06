@@ -2,7 +2,7 @@
 # Generic Makefile for a research paper
 #
 # Colin Perkins <csp@csperkins.org>
-# Copyright (C) 2016-2019 University of Glasgow
+# Copyright (C) 2016-2022 University of Glasgow
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -26,7 +26,7 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
+#
 # =================================================================================================
 # General hints for using make:
 #
@@ -44,9 +44,9 @@
 #    file that's listed as a dependency of the results it affects. Don't
 #    use make variables for important parameters, since targets are not
 #    automatically rebuilt if a variable in the Makefile changes.
-
+#
 # =================================================================================================
-# Configuration for make:
+# Configuration for make
 #
 # Nothing in this section should need to change on a per-project basis.
 
@@ -62,50 +62,83 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 # List of targets that don't represent files:
 .PHONY: all clean check-make git-revision check-downloads
 
-# =================================================================================================
-# Configuration for the project:
 
-# The PDF files to build, each should have a corresponding .tex file:
-PDF_FILES = papers/example.pdf
+# =================================================================================================
+# Configuration for the project
+#
+# The goal of this Makefile is to build one or more research papers in PDF
+# format from a set of TeX files and supporting scripts.
 
 # Tools to build before the PDF files. This is a list of executable files in
 # the bin/ directory:
 TOOLS = 
 
+
+# The main PDF files to build, each of which should have a corresponding .tex
+# file. Do not include PDF files for any figures here.
+PDF_FILES = papers/example.pdf
+
+# The TeX files from which main PDF is generated. This assumes that each PDF
+# file has a single corresponding TeX file. If you use \input to incorporate
+# other TeX files, they'll be automatically added to the dependencies by the
+# "Include dependency information for PDF files" rule below, so you don't need
+# to add them here.
+TEX_FILES = $(PDF_FILES:%.pdf=%.tex)
+
 # Master build rule:
 all: check-make git-revision $(TOOLS) $(PDF_FILES) 
 
 # =================================================================================================
-# Project specific rules to download files:
-#
+# Project specific rules to download files
+
 # The bin/download.sh script can be used to download files if they don't exist
-# or have changed on the server, as shown in the example below. The downloaded
-# files should depend on the bin/download.sh script and on the check-downloads
-# target. Each downloaded file must be added to $(DOWNLOADS) so the "download"
-# and "clean" targets work.
+# or have changed on the server. The downloaded files should have a dependency
+# on the bin/download.sh script and the check-downloads target. Each downloaded
+# file must be added to DOWNLOADS so the "download" and "clean" targets work.
+#
+# For example, to download example.html and example.json, you would write:
+#
+#   downloads/example.html: bin/download.sh check-downloads
+#   	@sh bin/download.sh https://example.com/example.html downloads/example.html
+#
+#   downloads/example.json: bin/download.sh check-downloads
+#   	@sh bin/download.sh https://example.org/example.json downloads/example.json
+#
+#   DOWNLOADS = downloads/example.html downloads/example.json
 
-index.html: bin/download.sh check-downloads
-	@bin/download.sh https://csperkins.org/index.html $@
+DOWNLOADS = 
 
-DOWNLOADS = index.html
-
-# Rule to manually downloads. This shouldn't be referenced in other rules, they
-# should depend on the downloaded files.
-download: $(DOWNLOADS)
-
-# This is marked as .PHONY above and must not depend on any real files. When
-# make runs it will see this as being out-of-date, triggering the downloads.
+# Rule to force downloads to run. This references a non-existant file that is
+# marked as .PHONY above and that MUST NOT depend on any real files. When the
+# Makefile runs it will always see this target as being out-of-date, forcing
+# the rules that depend on it to run.
 check-downloads:
 
 # =================================================================================================
 # Project specific rules:
 #
-# Add rules to build $(TOOLS) here (there is a generic rule to build a single
+# Add rules to build $(TOOLS) here. 
+#
+# (there is a generic rule to build a single
 # C source file into an executable below):
 
 
 
-# Add rules to build the dependencies of $(PDF_FILES) here:
+# Add rules to build the dependencies of $(PDF_FILES) here. This is where you
+# add the rules to build the PDF files for any figures included in the paper,
+# the TeX files for any generated tables or similar, and the processed data
+# from which they are plotted. 
+#
+# For example, if you have a TeX file that uses \includegraphics{figures/results.pdf}
+# then you need to add a rule here to build figures/results.pdf. That PDF file
+# might, in turn, depend on other files and you should also add rules to build
+# those files here. This might look something like the following:
+#
+#   figures/results.pdf: scripts/plot-results.py data/results.dat 
+#       python3 scripts/plot-results.py
+#
+#   data/results.dat: scripts/analyse-results.py
+#       python3 scripts/analyse-results.py
 
 
 
@@ -120,7 +153,7 @@ check-make:
 # as .PHONY above so the recipe always executes. The bin/git-revision.sh script
 # only writes to the output file if the revision has changed.
 git-revision: bin/git-revision.sh
-	@bin/git-revision.sh $@
+	@sh bin/git-revision.sh $@
 
 # =================================================================================================
 # Generic rules to build PDF files and figures:
@@ -128,13 +161,16 @@ git-revision: bin/git-revision.sh
 # Pattern rules to build a PDF file. The assumption is that each PDF file 
 # is built from the corresponding .tex file.
 %.pdf: %.tex bin/latex-build.sh
-	@bin/latex-build.sh $<
-	@bin/check-for-duplicate-words.perl $<
-	@bin/check-for-todo.sh              $<
-	@bin/check-for-ack.sh               $<
+	@sh bin/latex-build.sh $<
+	@sh bin/check-for-duplicate-words.perl $<
+	@sh bin/check-for-todo.sh              $<
+	@sh bin/check-for-ack.sh               $<
 
-# Include dependency information for PDF files, if it exists:
--include $(PDF_FILES:%.pdf=%.dep)
+# Include dependency information for PDF files. The bin/latex-build.sh
+# script will generate this as needed. This ensures that the Makefile
+# knows to try to build any PDF or TeX files included by the main TeX
+# files.
+-include $(TEX_FILES:%.tex=%.dep)
 
 # Pattern rules to build plots using gnuplot. These require the data
 # to be plotted be in figures/%.dat, while the script to control the
@@ -180,7 +216,7 @@ clean:
 	$(call remove,$(DOWNLOADS))
 	$(call remove,$(TOOLS))
 	$(foreach tool,$(TOOLS),rm -rf $(tool).dSYM)
-	@$(call remove-latex,$(PDF_FILES:%.pdf=%.tex))
+	@$(call remove-latex,$(TEX_FILES))
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
