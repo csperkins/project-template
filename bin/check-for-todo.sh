@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# = 0 ]; then
  echo "usage: bin/check-for-todo.sh <file> ..."
