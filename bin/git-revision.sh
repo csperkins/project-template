@@ -21,7 +21,7 @@ if [ ! -f $1 ]; then
   echo $NEWREV > $1
 else 
   OLDREV=`cat $1`
-  if [ $OLDREV != $NEWREV ]; then
+  if [ $OLDREV -a $OLDREV != $NEWREV ]; then
     echo "Updated $1"
     echo $NEWREV > $1
   fi
