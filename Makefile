@@ -56,8 +56,8 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 # Remove output of failed commands, to avoid confusing later runs of make:
 .DELETE_ON_ERROR:
 
-# Remove obsolete old-style default suffix rules:
-.SUFFIXES:
+# Don't delete intermediate files created as part of the build:
+.NOTINTERMEDIATE:
 
 # List of targets that don't represent files:
 .PHONY: all clean check-make git-revision check-downloads
