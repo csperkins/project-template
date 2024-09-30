@@ -2,7 +2,7 @@
 # Generic Makefile for a research paper
 #
 # Colin Perkins <csp@csperkins.org>
-# Copyright (C) 2016-2022 University of Glasgow
+# Copyright (C) 2016-2024 University of Glasgow
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -39,29 +39,18 @@
 # 2) If creating directories, use an order only prerequisite. For details:
 #    https://www.gnu.org/software/make/manual/make.html#Prerequisite-Types
 #
+#      figures:
+#        mkdir $@
+#
+#      figures/foo.pdf: scripts/foo.py results/foo.csv | figures
+#        python3 $< $@
+#
 # 3) The Makefile should specify dependencies, not parameters. If there's
 #    a parameter that affects the results, it should be set in a separate 
 #    file that's listed as a dependency of the results it affects. Don't
 #    use make variables for important parameters, since targets are not
 #    automatically rebuilt if a variable in the Makefile changes.
 #
-# =================================================================================================
-# Configuration for make
-#
-# Nothing in this section should need to change on a per-project basis.
-
-# Warn if the Makefile references undefined variables and remove built-in rules:
-MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-builtin-variables
-
-# Remove output of failed commands, to avoid confusing later runs of make:
-.DELETE_ON_ERROR:
-
-# Don't delete intermediate files created as part of the build:
-.NOTINTERMEDIATE:
-
-# List of targets that don't represent files:
-.PHONY: all clean check-make git-revision check-downloads
-
 
 # =================================================================================================
 # Configuration for the project
@@ -71,48 +60,23 @@ MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-bu
 
 # Tools to build before the PDF files. This is a list of executable files in
 # the bin/ directory:
-TOOLS = 
+TOOLS := 
 
 
 # The main PDF files to build, each of which should have a corresponding .tex
 # file. Do not include PDF files for any figures here.
-PDF_FILES = papers/example.pdf
+PDF_FILES := papers/example.pdf
 
 # The TeX files from which main PDF is generated. This assumes that each PDF
 # file has a single corresponding TeX file. If you use \input to incorporate
 # other TeX files, they'll be automatically added to the dependencies by the
 # "Include dependency information for PDF files" rule below, so you don't need
 # to add them here.
-TEX_FILES = $(PDF_FILES:%.pdf=%.tex)
-
-# Master build rule:
-all: check-make git-revision $(TOOLS) $(PDF_FILES) 
+TEX_FILES := $(PDF_FILES:%.pdf=%.tex)
 
 # =================================================================================================
-# Project specific rules to download files
-
-# The bin/download.sh script can be used to download files if they don't exist
-# or have changed on the server. The downloaded files should have a dependency
-# on the bin/download.sh script and the check-downloads target. Each downloaded
-# file must be added to DOWNLOADS so the "download" and "clean" targets work.
-#
-# For example, to download example.html and example.json, you would write:
-#
-#   downloads/example.html: bin/download.sh check-downloads
-#   	@sh bin/download.sh https://example.com/example.html downloads/example.html
-#
-#   downloads/example.json: bin/download.sh check-downloads
-#   	@sh bin/download.sh https://example.org/example.json downloads/example.json
-#
-#   DOWNLOADS = downloads/example.html downloads/example.json
-
-DOWNLOADS = 
-
-# Rule to force downloads to run. This references a non-existant file that is
-# marked as .PHONY above and that MUST NOT depend on any real files. When the
-# Makefile runs it will always see this target as being out-of-date, forcing
-# the rules that depend on it to run.
-check-downloads:
+# Master build rule:
+all: check-make git-revision $(TOOLS) $(PDF_FILES) 
 
 # =================================================================================================
 # Project specific rules:
@@ -162,9 +126,9 @@ git-revision: bin/git-revision.sh
 # is built from the corresponding .tex file.
 %.pdf: %.tex bin/latex-build.sh
 	@sh bin/latex-build.sh $<
-	@sh bin/check-for-duplicate-words.perl $<
-	@sh bin/check-for-todo.sh              $<
-	@sh bin/check-for-ack.sh               $<
+	@perl bin/check-for-duplicate-words.perl $<
+	@sh bin/check-for-todo.sh $<
+	@sh bin/check-for-ack.sh  $<
 
 # Include dependency information for PDF files. The bin/latex-build.sh
 # script will generate this as needed. This ensures that the Makefile
@@ -213,10 +177,57 @@ endef
 
 clean:
 	$(call remove,git-revision)
-	$(call remove,$(DOWNLOADS))
 	$(call remove,$(TOOLS))
 	$(foreach tool,$(TOOLS),rm -rf $(tool).dSYM)
 	@$(call remove-latex,$(TEX_FILES))
+
+# =================================================================================================
+# List of targets that don't represent files:
+.PHONY: all clean check-make git-revision check-downloads
+
+# =================================================================================================
+# Configuration for make
+#
+# Nothing in this section should need to change on a per-project basis.
+
+# The presence of the .DELETE_ON_ERROR target with no dependencies causes
+# make to remove a target if the command used to create it fails. It is
+# common for a command that crashes to leave behind a partially written
+# output file. With this target specified, such files are automatically
+# cleaned-up by make.
+.DELETE_ON_ERROR:
+
+# The presence of the .NOTINTERMEDIATE target with no dependencies tells
+# make not to delete intermediate files.  An intermediate file is a file
+# that's created by applying a chain of pattern rules but that isn't
+# explicitly mentioned as a dependency of any rule. 
+#
+# In this Makefile, files matching the pattern results/%.normalised.txt
+# are intermediate files. They're built as part of a chain of pattern rules
+# (results/%.json <- results/%.normalised.txt <- data/%.txt), but there is
+# no rule that explicitly depends on the list of files with names matching
+# the intermediate step (the depenency of results/most-common-words.dat on
+# $(WORDS) gives an explicit dependency on files matching results/%.json,
+# but there is no such explicit dependency on the files matching
+# results/%.normalised.txt)
+#
+# The use of .NOTINTERMEDIATE equires GNU make v4.4.1 or later.
+.NOTINTERMEDIATE:
+
+# Configuration for make:
+#   --output-sync
+#       When using -j to run in commands in parallel, buffer the output
+#       to avoid interspersing the results of multiple commands
+#   --warn-undefined-variables
+#       Warn if a rule refers to an undefined variable
+#   --no-builtin-rules
+#   --no-builtin-variables
+#       Remove the built-in rules and variables used to compile programs,
+#       build archives, etc., leaving behind only the rules and variables
+#       that are explicitly defined in the makefile.
+# Adding options to MAKEFLAGS in this way is equivalent to specifying the
+# options on the command line when running make.
+MAKEFLAGS += --output-sync --warn-undefined-variables --no-builtin-rules --no-builtin-variables
 
 # =================================================================================================
 # vim: set ts=2 sw=2 tw=0 ai:
