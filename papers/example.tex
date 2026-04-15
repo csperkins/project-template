@@ -221,6 +221,13 @@
 
 % Prevent hyphenation of all upper case words:
 \uchyph=0
+ 
+% Enable synctex, embedding information about the source file in the PDF.
+% This allows PDF viewers to tell the text editor to jump to the matching
+% location in the LaTeX document when the PDF is clicked.
+% (e.g., in the Skim PDF viewer on macOS, a Shift-Command-click jumps to
+% the relevant place in the LaTeX source).
+\synctex=1
 
 % The ACM style needs \maketitle after the abstract, but the other styles
 % want it before; these macros hide the difference and are used below:

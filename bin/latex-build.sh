@@ -104,7 +104,7 @@ else
     if [ -d `pwd`/lib/tex/inputs ]; then
       TEXINPUTS=$TEXINPUTS:`pwd`/lib/tex/inputs
     fi
-    TEXINPUTS=$TEXINPUTS: pdflatex -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
+    TEXINPUTS=$TEXINPUTS: pdflatex -synctex=1 -output-directory $DIR_NAME -recorder -interaction=nonstopmode -halt-on-error -file-line-error $TEX_BASE.tex
     if [ $? = 1 ]; then
       exit 1
     fi
