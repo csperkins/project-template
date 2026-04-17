@@ -2,7 +2,7 @@
 % LaTeX paper template - use as a starting point for structuring a research paper.
 %
 % Written by Colin Perkins (https://csperkins.org/)
-% 2002-2018
+% 2002-2026
 %
 % To the extent possible under law, the author(s) have dedicated all copyright and
 % related and neighbouring rights to this software to the public domain worldwide.
@@ -11,11 +11,10 @@
 % You should have received a copy of the CC0 Public Domain Dedication along with
 % this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 %
-% NOTE: The above Public Domain Dedication applies only to the LaTeX paper
-% template distributed from https://github.com/csperkins/project-template
-% in the file papers/example.tex. Unless explicitly stated, modifications
-% or additions to that template are copyright by their respective authors.
-%==================================================================================================
+%   *************************************************************************
+%   *** If you use this example.tex file as the basis for your paper, you ***
+%   *** MUST remove this header block and the above public domain grant.  ***
+%   *************************************************************************
 
 %==================================================================================================
 % General advice on technical writing:
@@ -39,252 +38,55 @@
 %
 % LaTeX usage notes:
 %  - http://www.read.seas.harvard.edu/~kohler/latex.html
-%
-%==================================================================================================
 
 %==================================================================================================
-% The \documentclass{} macro specifies the overall style. For computer
-% networking papers, common options are:
+% Recommended preamble for a paper using the ACM template. This will need
+% to be adapted for use with other templates: follow the guidance for the
+% venue to which you're submitting.
 %
-%   \documentclass[twocolumn,a4paper]{article}  % Base LaTeX style
-%   \documentclass[conference]{IEEEtran}        % IEEE Conference
-%   \documentclass[10pt,sigconf]{acmart}        % ACM SIGCOMM conference
+% The \DocumentMetadata line enables the accessibility features in LaTeX
+% PDF generation. It requires you have TeX Live 2026 installed and build
+% using lualatex rather than pdflatex.
 %
-% The IEEE and ACM templates are included in the lib/tex/inputs directory,
-% but check for updates and use the version specified by the conference or
-% journal to which you're submitting.
+% The \usepackage lines install commonly used extensions.These should be
+% available in most LaTeX installations. Documentation can be found at
+% https://www.ctan.org/. Note that the order in which packages are loaded
+% is significant.
+%
+% The \synctex=1 command tells LaTeX to embed information about the source
+% file into the PDF. This gives PDF viewers the ability to tell the text
+% editors to go to the matching location in the document when the PDF is
+% clicked.
 
+\DocumentMetadata{tagging=on,tagging-setup={math/setup=mathml-SE},pdfstandard=ua-2,lang=en-GB}
 \documentclass[10pt,sigconf]{acmart}
-
-% The following packages are recommended, and should be available in most
-% standard LaTeX installations (or from https://www.ctan.org/). Note that
-% the order in which packages are loaded is significant.
-
-% Basic extensions recommended for all LaTeX documents:
-%   nag        Warn about common problems with LaTeX files
-%   inputenc   Specify the character set used in .tex files
-%   babel      Language-specific typography and hyphenation
-%   microtype  Improved typography when generating PDF files
-
 \usepackage[l2tabu,orthodox]{nag}
-\usepackage[utf8x]{inputenc}
 \usepackage[british]{babel}
-\usepackage{ifpdf}
-\ifpdf
-  \usepackage{microtype}
-\fi
-
-% The AMS mathematics library greatly extends and improves mathematics
-% support in LaTeX (see http://ctan.org/pkg/amsmath for details). When
-%  preparing multi-line numbered equations, be sure to use:
-%
-%   \begin{align}
-%     ...
-%   \end{align}
-%
-% rather than:
-%
-%   \begin{eqnarray}
-%     ...
-%   \end{eqnarray}.
-%
-% when this package is loaded, to ensure they formatting is consistent
-% (see https://tug.org/pracjourn/2006-4/madsen/madsen.pdf for details).
-
+\usepackage{microtype}
 \usepackage{amsmath}
-\usepackage[all]{onlyamsmath}
-
-% Use Times, Helvetica, and Courier fonts, rather than Computer Modern:
-
-\makeatletter
-\@ifclassloaded{acmart}{
-  % The ACM article style sets the fonts internally
-}{
-  \usepackage{newtxtext}
-  \usepackage{newtxmath}
-}
-\makeatother
-
-% Add support for sub-figures within a figure, as follows:
-%
-%   \begin{figure}
-%     \centering
-%     \subfloat[caption for 1st subfloat]{
-%       \includegraphics{...}
-%       \label{...}
-%     }
-%     \\
-%     \subfloat[caption for 2nd subfloat]{
-%       \includegraphics{...}
-%       \label{...}
-%     }
-%     \caption{caption for entire figure}
-%     \label{...}
-%   \end{figure*}
-%
-% The subfig package obsoletes the older subfigure package, and is itself
-% deprecated in favour of the subcaption package. However, as of April 2015
-% subcaption doesn't work with ACM or IEEE style files (this is also the
-% reason for the [caption=false] option).
-
-\usepackage[caption=false]{subfig}
-
-% Improve formatting of tables. To produce nice looking tables:
-%
-%   - avoid vertical lines;
-%   - avoid double horizontal lines;
-%   - use horizontal lines above and below the table, and to separate the
-%     header from the body of the table, but not elsewhere; and
-%   - if in doubt, align columns to the left (columns of numbers should
-%     align to the decimal point)
-%
-% This translates to a tabular environment that looks something like the
-% following:
-%
-%   \begin{tabular}{lll}
-%     \toprule
-%        Header1 & Header2 & Header3 \\
-%     \midrule
-%        Line1   & ...     & ...     \\
-%        Line2   & ...     & ...     \\
-%        Line3   & ...     & ...     \\
-%        Line4   & ...     & ...     \\
-%     \bottomrule
-%   \end{tabular}
-
+% These are part of acmart so don't need to be included here:
+%   \usepackage{newtxtext}
+%   \usepackage{newtxmath}
+\usepackage{subcaption}     % Incompatible with tagging as on 2026-04-17
 \usepackage{booktabs}
-
-% Improve formatting for quote marks in verbatim mode:
 \usepackage{upquote}
-
-% Improve support for graphics:
 \usepackage{graphicx}
-
-% Add support for URLs using \url{...}. This formats the URL in typewriter
-% font, and makes it a hyperlink if the hyperref package is also loaded.
 \usepackage{url}
-
-% Add support for drawing packet headers. For instructions, see
-% http://ctan.org/tex-archive/macros/latex/contrib/bytefield
-\usepackage{bytefield}
-
-% Add support for typesetting program source code. You can either include
-% code in-line:
-%
-%   \begin{lstlisting}[language=Python]
-%   Source code goes here
-%   \end{lstlisting}
-%
-% or include a source file:
-%
-%  \lstinputlisting[language=Python]{source_filename.py}
-%
-% This package is highly customisable and supports a range of languages.
-% See package documentation at https://ctan.org/pkg/listings for details.
-\usepackage{listings}
-
-% Generated PDF files can include hyperlinks for URLs and cross-references
-% using the hyperref package. This package, however, can interact poorly
-% with others. Known issues include:
-%
-%  - Papers typeset without page numbers gives warnings of the form:
-%      "pdfTeX warning (ext4): destination with the same identifier
-%      (name{page.}) has been already used, duplicate ignored".
-%    since hyperref tries to refer to the page number.
-%  - The algorithmic package uses the same line-numbering scheme for each
-%    algorithm, and can cause duplicate identifier warnings if you have
-%    several algorithms with line numbers (this may have been fixed with
-%    recent versions of algorithmic...).
-%  - If using the algorithm package with hyperref, you need to load packages
-%    in the following order (see README in hyperref documentation):
-%      \usepackage{float}
-%      \usepackage{hyperref}
-%      \usepackage{algorithm}
-% For these reasons, hyperref is best to avoid for most papers, however if
-% needed, uncomment the following two lines:
-%  \usepackage{float}
-%  \usepackage{hyperref}
-
-% The algorithm package defines the algorithm environment. This is used in
-% the same way as the figure and table environments, to include algorithms
-% in a paper. The algpseudocode package provides the ability to typeset the
-% algorithms: http://ctan.org/tex-archive/macros/latex/contrib/algorithmicx
-\usepackage{algorithm}
-\usepackage{algpseudocode}
+\usepackage{listings}       % Incompatible with tagging as on 2026-04-17
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{algorithm}      % Incompatible with tagging as on 2026-04-17
 \usepackage{color}
 
-% By default, LaTeX adds extra space after punctuation. The \frenchspacing
-% command disables this. This creates tighter looking, more even, text and
-% avoids inconsistencies if you forget to use '\ ' to suppress the spacing
-% after in-sentence punctuation.
-\frenchspacing
-
-% Prevent hyphenation of all upper case words:
-\uchyph=0
- 
-% Enable synctex, embedding information about the source file in the PDF.
-% This allows PDF viewers to tell the text editor to jump to the matching
-% location in the LaTeX document when the PDF is clicked.
-% (e.g., in the Skim PDF viewer on macOS, a Shift-Command-click jumps to
-% the relevant place in the LaTeX source).
-\synctex=1
-
-% The ACM style needs \maketitle after the abstract, but the other styles
-% want it before; these macros hide the difference and are used below:
-\makeatletter
-\@ifclassloaded{acmart}{
-  \newcommand{\maketitleSTD}{}
-  \newcommand{\maketitleACM}{\maketitle}
-}{
-  \newcommand{\maketitleSTD}{\maketitle}
-  \newcommand{\maketitleACM}{}
-}
-\makeatother
+\uchyph=0   % Prevent hyphenation of all upper case words:
+\synctex=1  % Enable synctex extension
 
 % Define a simple \todo{...} macro:
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{To do: #1}}}
 
 %==================================================================================================
 \begin{document}
-% Specify the title of the document:
-
-\title{...}
-
-% Specify the authors of the document. Unfortunately, there's no consistent
-% way to do this that works across the different document classes.
-%
-% If using \documentclass{article}:
-%
-%   \author{
-%      A. N. Other\\University of Glasgow
-%   \and
-%      Colin Perkins\\University of Glasgow
-%   }
-%
-% If using \documentclass{IEEEtran}:
-%
-%   \author{
-%     \IEEEauthorblockN{A. N. Other}
-%     \IEEEauthorblockA{University of Glasgow}
-%   \and
-%     \IEEEauthorblockN{Colin Perkins}
-%     \IEEEauthorblockA{University of Glasgow}
-%   }
-%
-% If using \documentclass{acmart} add a block like the following per author:
-%
-%   \author{Colin Perkins}
-%   \orcid{0000-0002-3404-8964}
-%   \affiliation{
-%     \institution{University of Glasgow}
-%     \streetaddress{School of Computing Science}
-%     \city{Glasgow}
-%     \postcode{G12 8QQ}
-%     \country{UK}
-%   }
-%   \email{csp@csperkins.org}
-%
-% If you don't have an ORCID identifier, sign up for one at https://orcid.org
+\title{Title goes here}
 
 \author{Colin Perkins}
 \orcid{0000-0002-3404-8964}
@@ -297,20 +99,6 @@
 }
 \email{csp@csperkins.org}
 
-% Specify metadata about the paper. Again, what is required depends on the
-% document class. If using \documentclass{acmart}, specify the following:
-%
-%   \acmYear{2018}
-%   \copyrightyear{2018}
-%   \setcopyright{acmcopyright}
-%   \acmConference{CoNEXT '18}{December 4--7, 2018}{Heraklion/Crete, Greece}
-%   \acmPrice{15.00}
-%   \acmDOI{10.1145/3284850.3284856}
-%   \acmISBN{978-1-4503-6082-1/18/12}
-%
-% The complete metadata is likely only available when preparing the final,
-% camera ready, version of the paper.
-
 \acmYear{2018}
 \copyrightyear{2018}
 \setcopyright{acmcopyright}
@@ -320,7 +108,6 @@
 \acmISBN{978-1-4503-6082-1/18/12}
 
 %==================================================================================================
-\maketitleSTD
 \begin{abstract}
   % Four sentences:
   %  - State the problem
@@ -331,7 +118,7 @@
   The abstract goes here.
 
 \end{abstract}
-\maketitleACM
+\maketitle
 %==================================================================================================
 \section{Introduction}
 
@@ -473,27 +260,6 @@ We structure the remainder of this paper as follows.
 % Load the bibliography file(s) for this paper:
 \bibliography{example}
 
-%==================================================================================================
-% The following information gets written into the PDF file information:
-\ifpdf
-  \pdfinfo{
-    /Title        (...)
-    /Author       (...)
-    /Subject      (...)
-    /Keywords     (..., ..., ...)
-    /CreationDate (D:20150827110616Z)
-    /ModDate      (D:20150827110616Z)
-    /Creator      (LaTeX)
-    /Producer     (pdfTeX)
-  }
-  % Suppress unnecessary metadata, to ensure the PDF generated by pdflatex is
-  % identical each time it is built. This needs pdfTeX 3.14159265-2.6-1.40.17
-  % or later.
-  \ifdefined\pdftrailerid
-    \pdftrailerid{}
-    \pdfsuppressptexinfo=15
-  \fi
-\fi
 %==================================================================================================
 \end{document}
 % vim: set ts=2 sw=2 tw=75 et ai:
