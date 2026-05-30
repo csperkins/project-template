@@ -190,6 +190,9 @@ clean:
 #
 # Nothing in this section should need to change on a per-project basis.
 
+# Make the shell less forgiving of errors when running commands.
+.SHELLFLAGS += -e -u -o pipefail -c
+
 # The presence of the .DELETE_ON_ERROR target with no dependencies causes
 # make to remove a target if the command used to create it fails. It is
 # common for a command that crashes to leave behind a partially written
