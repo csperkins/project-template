@@ -190,6 +190,13 @@ clean:
 #
 # Nothing in this section should need to change on a per-project basis.
 
+# SOURCE_DATE_EPOCH is a standard environment variable that supported tools,
+# such as matplotlib, use to override the creation date that they embed into
+# files, making builds reproducible. Setting it to zero forces the creation
+# date to 1 January 1970, but stops matplotlib generated PDFs from changing
+# each time they're built.
+export SOURCE_DATE_EPOCH := 0
+
 # Make the shell less forgiving of errors when running commands.
 .SHELLFLAGS += -e -u -o pipefail -c
 
